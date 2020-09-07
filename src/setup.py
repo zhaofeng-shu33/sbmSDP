@@ -1,9 +1,12 @@
-from setuptools import setup
+from setuptools import setup, Extension
 from Cython.Build import cythonize
-
+extensions = [
+    Extension("sdp_admm_py", ["sdp_admm_py.pyx"],
+        include_dirs=['/home/zhaofeng/R/x86_64-pc-linux-gnu-library/3.5/RcppArmadillo/include',
+                      '/home/zhaofeng/R/x86_64-pc-linux-gnu-library/3.5/Rcpp/include',
+                      '/usr/share/R/include'])]
 setup(
-    ext_modules = cythonize("sdp_admm.pyx", include_path=["/home/zhaofeng/R/x86_64-pc-linux-gnu-library/3.5/Rcpp/include",
-        "/home/zhaofeng/R/x86_64-pc-linux-gnu-library/3.5/RcppArmadillo/include"])
+    ext_modules=cythonize(extensions)
 )
 
 
