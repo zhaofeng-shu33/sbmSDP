@@ -6,7 +6,7 @@ def sdp1_admm_py(pyMat, K):
     cdef List empty_list, result_list
     cdef mat _m
     cdef NumericMatrix _m_r
-    n_rows, n_cols = pyMat.shape()
+    n_rows, n_cols = pyMat.shape
     _m.set_size(n_rows, n_cols)
     for i in range(n_rows):
         for j in range(n_cols):
