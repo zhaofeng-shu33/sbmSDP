@@ -1,0 +1,37 @@
+\ProvidesPackage{arash_macros2}[08/26/2015 My macross v1.0]
+
+\newcommand{\reals}{\mathbb{R}}
+\newcommand{\realspp}{\reals_{++}}
+\newcommand{\nats}{\mathbb{N}}
+\newcommand{\ints}{\mathbb{Z}}
+
+\newcommand{\pr}{\mathbb{P}}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\ex}{\mathbb{E}}
+%\newcommand{\lbrk}[1]{\lfloor #1 \rfloor}
+%\newcommand{\ubrk}[1]{\lceil #1 \rceil}
+
+\newcommand{\ceil}[1]{\lceil #1 \rceil}
+\newcommand{\floor}[1]{\lfloor #1 \rfloor}
+\DeclareMathOperator{\supp}{supp}
+\DeclareMathOperator*{\argmin}{argmin}
+\DeclareMathOperator*{\argmax}{argmax}
+\DeclareMathOperator{\lip}{Lip}
+\DeclareMathOperator{\iid}{\stackrel{iid}{\sim}}
+\DeclareMathOperator{\diag}{diag}
+\newcommand{\vnorm}[1]{\|#1\|}
+
+\RequirePackage{tikz}
+
+\newcommand{\myboxedtext}[2][rectangle,draw,rounded corners,inner
+sep=3mm]{\tikz[baseline=-0.6ex] \node [#1,rounded corners]{#2};}%
+
+\newcommand{\ip}[1]{\langle #1\rangle}
+
+%\newtheorem{thm}{Theorem}
+%\newtheorem{prop}{Proposition}
+%\newtheorem{cor}{Corollary}
+%\newtheorem{lem}{Lemma}
+%\newtheorem{defn}{Definition}
+%\newtheorem{rem}{Remark}
+%\newtheorem{exa}{Example}

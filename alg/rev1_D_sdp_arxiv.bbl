@@ -1,0 +1,290 @@
+\begin{thebibliography}{10}
+
+\bibitem{Abbe2014}
+E.~Abbe, A.~S. Bandeira, and G.~Hall.
+\newblock {Exact recovery in the stochastic block model}.
+\newblock {\em IEEE Transactions on Information Theory}, 62(1):471----487, May
+  2016.
+
+\bibitem{Abbe2015}
+E.~Abbe and C.~Sandon.
+\newblock {Community detection in general stochastic block models: fundamental
+  limits and efficient recovery algorithms}.
+\newblock {\em arXiv preprint arXiv:1503.00609}, Feb. 2015.
+
+\bibitem{Airoldi2008}
+E.~M. Airoldi, D.~M. Blei, S.~E. Fienberg, and E.~P. Xing.
+\newblock Mixed membership stochastic blockmodels.
+\newblock {\em J. Machine Learning Research}, 9:1981--2014, 2008.
+
+\bibitem{Airoldi.et.al.2013}
+E.~M. Airoldi, T.~B. Costa, and S.~H. Chan.
+\newblock Stochastic blockmodel approximation of a graphon: Theory and
+  consistent estimation.
+\newblock In {\em Advances in NIPS 26}, pages 692--700. 2013.
+
+\bibitem{Aldous81}
+D.~J. Aldous.
+\newblock Representations for partially exchangeable arrays of random
+  variables.
+\newblock {\em J. Multivariate Analysis}, 11:581--598, 1981.
+
+\bibitem{Ames2010}
+B.~P.~W. Ames and S.~A. Vavasis.
+\newblock {Convex optimization for the planted k-disjoint-clique problem}.
+\newblock {\em Mathematical Programming}, 143(1):299--337, Aug. 2014.
+
+\bibitem{Amini.et.al.2013}
+A.~A. Amini, A.~Chen, P.~Bickel, and E.~Levina.
+\newblock Fitting community models to large sparse networks.
+\newblock {\em Annals of Statistics}, 41(4):2097--2122, 2013.
+
+\bibitem{Amini2009}
+A.~A. Amini and M.~J. Wainwright.
+\newblock {High-dimensional analysis of semidefinite relaxations for sparse
+  principal components}.
+\newblock {\em The Annals of Statistics}, 37(5B):2877--2921, Oct. 2009.
+
+\bibitem{Awasthi2014}
+P.~Awasthi, A.~S. Bandeira, M.~Charikar, R.~Krishnaswamy, S.~Villar, and
+  R.~Ward.
+\newblock {Relax, no need to round: integrality of clustering formulations}.
+\newblock In {\em Proceedings of the 2015 Conference on Innovations in
+  Theoretical Computer Science}, pages 191----200, Aug. 2015.
+
+\bibitem{Bickel2009}
+P.~J. Bickel and A.~Chen.
+\newblock {A nonparametric view of network models and Newman-Girvan and other
+  modularities.}
+\newblock {\em Proceedings of the National Academy of Sciences of the United
+  States of America}, 106(50):21068--73, Dec. 2009.
+
+\bibitem{Bickel&Chen2009}
+P.~J. Bickel and A.~Chen.
+\newblock A nonparametric view of network models and {N}ewman-{G}irvan and
+  other modularities.
+\newblock {\em Proc. Natl. Acad. Sci. USA}, 106:21068--21073, 2009.
+
+\bibitem{Bickel&Choi&etal2012}
+P.~J. Bickel, D.~Choi, X.~Chang, and H.~Zhang.
+\newblock Asymptotic normality of maximum likelihood and its variational
+  approximation for stochastic blockmodels.
+\newblock {\em Annals of Statistics}, 41:1922--1943, 2013.
+
+\bibitem{Boyd2010}
+S.~Boyd, N.~Parikh, E.~Chu, B.~Peleato, and J.~Eckstein.
+\newblock {Distributed Optimization and Statistical Learning via the
+  Alternating Direction Method of Multipliers}.
+\newblock {\em Foundations and Trends in Machine Learning}, 3(1):1--122, 2010.
+
+\bibitem{Cai2014}
+T.~Cai and X.~Li.
+\newblock {Robust and computationally feasible community detection in the
+  presence of arbitrary outlier nodes}.
+\newblock {\em The Annals of Statistics}, 43(3):1027----1059, 2015.
+
+\bibitem{Celisseetal2011}
+A.~Celisse, J.-J. Daudin, and L.~Pierre.
+\newblock Consistency of maximum-likelihood and variational estimators in the
+  stochastic block model.
+\newblock {\em Electronic Journal of Statistics}, 6:1847--1899, 2012.
+
+\bibitem{Chaudhuri&Chung&Tsiatas2012}
+K.~Chaudhuri, F.~Chung, and A.~Tsiatas.
+\newblock Spectral clustering of graphs with general degrees in the extended
+  planted partition model.
+\newblock {\em JMLR Workshop and Conference Proceedings}, 23:35.1--35.23, 2012.
+
+\bibitem{Chen2012}
+Y.~Chen, S.~Sanghavi, and H.~Xu.
+\newblock {Clustering Sparse Graphs.}
+\newblock In {\em NIPS}, pages 2204----2212, 2012.
+
+\bibitem{Chen2014}
+Y.~Chen and J.~Xu.
+\newblock {Statistical-Computational Tradeoffs in Planted Problems and
+  Submatrix Localization with a Growing Number of Clusters and Submatrices}.
+\newblock {\em arXiv preprint arXiv:1402.1267}, 2014.
+
+\bibitem{D'Aspremont2004}
+A.~D'Aspremont, L.~{El Ghaoui}, M.~I. Jordan, and G.~R. Lanckriet.
+\newblock {A direct formulation for sparse PCA using semidefinite programming}.
+\newblock {\em SIAM review}, 49(3):434----448, 2007.
+
+\bibitem{Decelle2011}
+A.~Decelle, F.~Krzakala, C.~Moore, and L.~Zdeborov\'{a}.
+\newblock {Asymptotic analysis of the stochastic block model for modular
+  networks and its algorithmic applications}.
+\newblock {\em Physical Review E}, 84(6):066106, Sept. 2011.
+
+\bibitem{Decelle.et.al.2011}
+A.~Decelle, F.~Krzakala, C.~Moore, and L.~Zdeborov\'{a}.
+\newblock Asymptotic analysis of the stochastic block model for modular
+  networks and its algorithmic applications.
+\newblock {\em Physical Review E}, 84:066106, 2012.
+
+\bibitem{Feige2005}
+U.~Feige and E.~Ofek.
+\newblock {Spectral techniques applied to sparse random graphs}.
+\newblock {\em Random Structures \& Algorithms}, 27(2):251--275, 2005.
+
+\bibitem{Gao2015}
+C.~Gao, Y.~Lu, and H.~H. Zhou.
+\newblock {Rate-optimal Graphon Estimation}.
+\newblock {\em The Annals of Statistics}, 43(6):2624----2652, 2015.
+
+\bibitem{Guedon2014}
+O.~Gu\'{e}don and R.~Vershynin.
+\newblock {Community detection in sparse networks via Grothendieck's
+  inequality}.
+\newblock Nov. 2014.
+
+\bibitem{Hajek2014}
+B.~Hajek, Y.~Wu, and J.~Xu.
+\newblock {Achieving Exact Cluster Recovery Threshold via Semidefinite
+  Programming}.
+\newblock {\em arXiv preprint arXiv:1412.6156}, Nov. 2014.
+
+\bibitem{Hajek2015}
+B.~Hajek, Y.~Wu, and J.~Xu.
+\newblock {Achieving Exact Cluster Recovery Threshold via Semidefinite
+  Programming: Extensions}.
+\newblock {\em arXiv preprint arXiv:1502.07738}, Feb. 2015.
+
+\bibitem{Holland83}
+P.~W. Holland, K.~B. Laskey, and S.~Leinhardt.
+\newblock Stochastic blockmodels: first steps.
+\newblock {\em Social Networks}, 5(2):109--137, 1983.
+
+\bibitem{Joseph2013}
+A.~Joseph and B.~Yu.
+\newblock {Impact of regularization on Spectral Clustering}.
+\newblock {\em arXiv preprint arXiv:1312.1733}, 2013.
+
+\bibitem{Klopp2015}
+O.~Klopp, A.~B. Tsybakov, and N.~Verzelen.
+\newblock {Oracle inequalities for network models and sparse graphon
+  estimation}.
+\newblock {\em arXiv preprint arXiv:1507.04118}, jul 2015.
+
+\bibitem{Le2015}
+C.~M. Le, E.~Levina, and R.~Vershynin.
+\newblock {Sparse random graphs: regularization and concentration of the
+  Laplacian}.
+\newblock {\em arXiv preprint arXiv:1502.03049}, Feb. 2015.
+
+\bibitem{Lei&Rinaldo2013}
+J.~Lei and A.~Rinaldo.
+\newblock Consistency of spectral clustering in sparse stochastic block models.
+\newblock 2013.
+\newblock arxiv:1312.2050.
+
+\bibitem{Lusseau&Newman2004}
+D.~Lusseau and M.~E.~J. Newman.
+\newblock Identifying the role that animals play in their social networks.
+\newblock {\em Proceedings of the Royal Society, Ser. B: Biological Sciences},
+  271:S477--S481, 2004.
+
+\bibitem{Massoulie2013}
+L.~Massoulie.
+\newblock {Community detection thresholds and the weak Ramanujan property}.
+\newblock In {\em Proceedings of the 46th Annual ACM Symposium on Theory of
+  Computing}, pages 694--703, Nov. 2014.
+
+\bibitem{Mathieu2010}
+C.~Mathieu and W.~Schudy.
+\newblock {Correlation clustering with noisy input}.
+\newblock In {\em Proceedings of the twenty-first annual ACM}, pages
+  712----728, 2010.
+
+\bibitem{Mossel.et.al.2012}
+E.~Mossel, J.~Neeman, and A.~Sly.
+\newblock Stochastic block models and reconstruction.
+\newblock arXiv:1202.1499, 2012.
+
+\bibitem{Mossel2013}
+E.~Mossel, J.~Neeman, and A.~Sly.
+\newblock {A proof of the block model threshold conjecture}.
+\newblock {\em arXiv preprint arXiv:1311.4115}, Nov. 2013.
+
+\bibitem{Mossel2014}
+E.~Mossel, J.~Neeman, and A.~Sly.
+\newblock {Consistency Thresholds for Binary Symmetric Block Models}.
+\newblock {\em arXiv preprint arXiv:1407.1591}, July 2014.
+
+\bibitem{Nowicki2001}
+K.~Nowicki and T.~A.~B. Snijders.
+\newblock Estimation and prediction for stochastic blockstructures.
+\newblock {\em Journal of the American Statistical Association},
+  96(455):1077--1087, 2001.
+
+\bibitem{Olhede2013}
+S.~C. Olhede and P.~J. Wolfe.
+\newblock {Network histograms and universality of blockmodel approximation}.
+\newblock {\em Proceedings of the National Academy of Sciences},
+  111(41):14722----14727, 2014.
+
+\bibitem{Peng2007}
+J.~Peng and Y.~Wei.
+\newblock {Approximating k-means-type clustering via semidefinite programming}.
+\newblock {\em SIAM Journal on Optimization}, 18(1):186--205, 2007.
+
+\bibitem{Qin&Rohe2013}
+T.~Qin and K.~Rohe.
+\newblock Regularized spectral clustering under the degree-corrected stochastic
+  blockmodel.
+\newblock 2013.
+\newblock arxiv:1309.4111.
+
+\bibitem{Rohe2011}
+K.~Rohe, S.~Chatterjee, and B.~Yu.
+\newblock Spectral clustering and the high-dimensional stochastic block model.
+\newblock {\em Annals of Statistics}, 39(4):1878–--1915, 2011.
+
+\bibitem{Snijders&Nowicki1997}
+T.~Snijders and K.~Nowicki.
+\newblock Estimation and prediction for stochastic block-structures for graphs
+  with latent block structure.
+\newblock {\em Journal of Classification}, 14:75--100, 1997.
+
+\bibitem{Tomozei2011}
+D.-C. Tomozei and L.~Massouli\'{e}.
+\newblock {Distributed user profiling via spectral methods}.
+\newblock In {\em ACM SIGMETRICS Performance Evaluation Review}, pages
+  383----384, 2010.
+
+\bibitem{Vu2013}
+V.~Vu, J.~Cho, J.~Lei, and K.~Rohe.
+\newblock {Fantope Projection and Selection: A nearoptimal convex relaxation of
+  sparse PCA}.
+\newblock In {\em NIPS}, pages 1--9, 2013.
+
+\bibitem{Wainwright2009}
+M.~J. Wainwright.
+\newblock {Sharp thresholds for high-dimensional and noisy sparsity recovery
+  using constrained quadratic programming (Lasso)}.
+\newblock {\em IEEE Trans. Info. Theory}, 55(5):2183--2202, 2009.
+
+\bibitem{Wolfe2013}
+P.~J. Wolfe and S.~C. Olhede.
+\newblock {Nonparametric graphon estimation}.
+\newblock {\em arXiv preprint arXiv:1309.5936}, 2013.
+
+\bibitem{Xing2003}
+E.~P. Xing and M.~I. Jordan.
+\newblock {On semidefinite relaxations for normalized k-cut and connections to
+  spectral clustering}.
+\newblock Technical report, UC Berkeley, 2003.
+
+\bibitem{Zhang2015}
+Y.~Zhang, E.~Levina, and J.~Zhu.
+\newblock {Estimating network edge probabilities by neighborhood smoothing}.
+\newblock {\em arXiv preprint arXiv:1509.08588}, sep 2015.
+
+\bibitem{Zhaoetal2012}
+Y.~Zhao, E.~Levina, and J.~Zhu.
+\newblock Consistency of community detection in networks under degree-corrected
+  stochastic block models.
+\newblock {\em Annals of Statistics}, 40(4):2266--2292, 2012.
+
+\end{thebibliography}

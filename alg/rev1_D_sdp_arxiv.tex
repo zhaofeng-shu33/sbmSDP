@@ -1,0 +1,151 @@
+\documentclass[11pt]{article} 
+%\documentclass[aoas,preprint]{imsart}
+
+\RequirePackage[OT1]{fontenc}
+\RequirePackage[colorlinks,citecolor=blue,urlcolor=blue]{hyperref}
+
+\usepackage{verbatim}
+\usepackage{url}
+\usepackage[margin=2.9cm]{geometry}
+
+%for using pdflatex with .eps figures
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\epstopdfsetup{update} 
+
+\usepackage{amsmath,amsfonts,amssymb,amsthm}
+\usepackage{array}
+\usepackage{graphicx}
+\usepackage{bm}
+\usepackage{multirow}
+\usepackage[font=footnotesize]{caption}
+\usepackage{subcaption}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+%\usepackage{algorithmicx}
+%\usepackage{authblk}
+\usepackage{cleveref}
+\newcommand{\crefrangeconjunction}{--}
+\crefname{equation}{}{}
+
+\newfloat{algorithm}{t}{lop}
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
+
+\usepackage{arash_macros2}
+\input{bm_sdp_macros3.tex}
+
+% \title{On semidefinite relaxations for the block model}
+
+% \author{Arash A. Amini}
+% \author{Elizaveta Levina}
+% \affil{Department of Statistics, UCLA and \\
+%         Department of Statistics, University of Michigan}
+% \author{
+% Arash A. Amini \\
+% %\thanks{ Use footnote for providing further information
+% %about author (webpage, alternative address)---\emph{not} for acknowledging
+% %funding agencies.} \\
+% Department of Statistics\\
+% University of Michigan\\
+% Ann Arbor, MI 48109
+% %\texttt{aaamini@umich.edu} \\
+% \and
+% Elizaveta Levina \\
+% Department of Statistics \\
+% University of Michigan\\
+% Ann Arbor, MI 48109\\
+% %\texttt{elevina@umich.edu}
+% }
+
+% The \author macro works with any number of authors. There are two commands
+% used to separate the names and addresses of multiple authors: \And and \AND.
+%
+% Using \And between authors leaves it to \LaTeX{} to determine where to break
+% the lines. Using \AND forces a linebreak at that point. So, if \LaTeX{}
+% puts 3 of 4 authors names on the first line, and the last on the second
+% line, try using \AND instead of \And before the third author name.
+
+%\newcommand{\fix}{\marginpar{FIX}}
+%\newcommand{\new}{\marginpar{NEW}}
+
+%\nipsfinalcopy % Uncomment for camera-ready version
+
+%Liza
+\newcommand{\tcb}{\textcolor{red}}
+%end Liza
+
+\newcommand{\aaa}{\textcolor{cyan}}
+
+%\startlocaldefs
+\numberwithin{equation}{section}
+\theoremstyle{plain}
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{prop}{Proposition}[section]
+\newtheorem{cor}{Corollary}[section]
+\newtheorem{lem}{Lemma}[section]
+\theoremstyle{definition}
+\newtheorem{defn}{Definition}[section]
+\newtheorem{rem}{Remark}[section]
+\newtheorem{exa}{Example}[section]
+%\endlocaldefs
+
+\usepackage{authblk}
+
+%\listfiles
+%\includeonly{rev1_D_sdp_main}
+%\includeonly{rev1_D_sdp_supp}
+
+\title{On semidefinite relaxations for the block model}
+
+\author{Arash A. Amini}
+\author{Elizaveta Levina}
+\affil{Department of Statistics, UCLA and \\
+        Department of Statistics, University of Michigan}
+
+
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+	The stochastic block model (SBM) is a popular tool for community
+	detection in networks, but fitting it by maximum likelihood (MLE)
+	involves a computationally infeasible optimization problem.  We propose a new
+	semidefinite programming (SDP) solution to the problem of fitting the
+	SBM, derived as a relaxation of the MLE.   We put ours and previously proposed SDPs in a unified framework, as relaxations of the MLE over various sub-classes of the SBM, which also reveals a connection to the well-known problem of sparse PCA.      Our main relaxation, which we call SDP-1, is tighter
+	than other recently proposed SDP relaxations, and thus previously
+	established theoretical guarantees carry over. However, we show that SDP-1 exactly recovers true communities over a wider class of SBMs than those covered by current results. In particular, the assumption of strong assortativity of the SBM, implicit in consistency conditions for previously proposed SDPs, can be relaxed to weak assortativity for our approach, thus significantly broadening the class of SBMs covered by the  consistency results.  
+	%
+	We also show that strong assortativity is indeed a necessary condition for exact recovery for previously proposed SDP approaches and not an artifact of the proofs.  Our analysis of SDPs is based on primal-dual witness constructions, which provides some insight into the nature of the solutions of various SDPs. In particular, we show how to combine features from SDP-1 and already available SDPs to achieve the most flexibility in terms of both assortativity and block-size constraints, as our relaxation has the tendency to produce communities of similar sizes.    This tendency makes it the ideal
+	tool for fitting network histograms,  a method gaining popularity in the graphon estimation literature, as we illustrate on an example of a social networks of dolphins. We also provide empirical evidence that SDPs outperform spectral methods for fitting SBMs with a large number of blocks.
+
+\end{abstract}
+
+
+\include{rev1_D_sdp_main_arxiv}
+
+
+\include{rev1_D_sdp_supp_arxiv}
+
+
+\section*{Acknowledgements}
+We would like to thank Karl Rohe and David Choi for interesting discussions regarding the possibility of extending SDPs to mixed models. This research has been partially supported by NSF grants DMS-1106772, DMS-1159005, and DMS-1521551.
+
+
+
+% \begin{supplement}[id=suppA]
+% \sname{Supplement A}%\label{supp}
+% \stitle{Remaining proofs}
+% %\sdatatype{supplementA.pdf}
+% %\sdescription{This supplement contains proofs of some of the results.}
+% \end{supplement}
+
+
+
+\bibliographystyle{abbrv}
+\bibliography{bm_sdp7,allref}
+%\printbibliography
+
+\end{document}

@@ -1,0 +1,775 @@
+% -*- root: rev1_D_sdp_arxiv.tex -*-
+% \begin{frontmatter}
+% 	\title{On semidefinite relaxations for the block model}
+
+% 	\begin{aug}
+% 	 \author{Arash A. Amini\thanksref{ucla}\ead[label=earash]{aaamini@ucla.edu}}
+%      \and
+% 	 \author{Elizaveta Levina\thanksref{umich} \ead[label=eliza]{elevina@umich.edu}}
+	    
+% 	 \affiliation{ \thanksmark{ucla}\mbox{UCLA} and \thanksmark{umich}\mbox{University of Michigan} }
+	       
+% 	 \address{Department of Statistics\\ UCLA\\ Los Angeles, CA 90095\\ \printead{earash}}
+	             
+% 	 \address{Department of Statistics\\ University of Michigan\\ Ann Arbor, MI 48109-1107\\\printead{eliza}}
+% 	\end{aug}
+
+
+% %\begin{keyword}[class=AMS]
+% %\kwd[Primary ]{60K35}
+% %\kwd{60K35}
+% %\kwd[; secondary ]{60K35}
+% %\end{keyword}
+
+% % \begin{keyword}
+% % \kwd{community detection} 
+% % \kwd{network}
+% % \kwd{semidefinite programming}
+% % \kwd{stochastic block model}
+% % \end{keyword}
+
+% \end{frontmatter}
+
+%  %\setattribute{journal}{name}{}
+
+%  \setcounter{section}{8}
+
+% \appendix
+
+The following appendices contain proofs of the remaining results, a detailed description of the implementation of an ADMM solver for SDP 1, and additional details on simulations.  
+
+
+%\appendix
+\section{Proofs of Section~\ref{SEC:SDP:RESPECTS:ORDERING}}\label{sec:proof:SDP:respects:ordering}
+\begin{proof}[Proof of Lemma~\ref{lem:deterministic:nesting}]
+  Let $\Stru := \supp(\Xtru)$. We proceed in two steps, first setting elements on $\Stru$ to one, and then setting elements on $\Stru^c$ to zero. 
+  More precisely, let $\At_1 = \At$ on $\Stru$ (meaning that $[\At_1]_{ij} = \At_{ij}$ for $(i,j) \in \Stru$) and $\At_1 = A$ on $\Stru^c$.
+  Let $X$ be any feasible solution other than $\Xtru$, so that $0 \le X\le 1$. We will use the notation $\ip{A,X}_{\Stru} := \sum_{(i,j)\in \Stru} A_{ij} X_{ij}$. By (unique) optimality of $\Xtru$ for $A$, we have $\ip{A,X} < \ip{A,\Xtru}$. Then,
+  \begin{align*}
+       \ip{\At_1,X-\Xtru}_{\Stru^c}  = \ip{A,X-\Xtru}_{\Stru^c} < \ip{A,\Xtru-X}_{\Stru} \le \ip{\At_1,\Xtru-X}_{\Stru}
+  \end{align*}
+  where the first equality is by assumption and the last inequality follows from $A \le \At_1$ on $\Stru$, and that $\Xtru - X \ge 0$ on $\Stru$. (Note that $\Xtru = \onem_m$ on $\Stru$ and $X \le 1$ everywhere.) Hence, the conclusion of the lemma follows for $\At_1$.  Now, we can write
+  \begin{align*}
+    \ip{\At,X} \le \ip{\At_1,X} < \ip{\At_1,\Xtru} = \ip{\At,\Xtru}.
+  \end{align*}
+  The first inequality is by nonnegativity of $X$ and $\At \le \At_1$ everywhere. The second inequality is by (unique) optimality of $\Xtru$ for $\At_1$. The last equality is by $\At = \At_1$ on $\Stru$.
+\end{proof}
+
+\begin{proof}[Proof of Corollary~\ref{cor:BM:ordering}]
+   We construct a coupling between $A$ and $\At$. Recall that $\subb{k}$ denotes the indices of nodes in community $k$. Draw $A \sim \bBM_m(\Qm)$, and draw
+   \begin{alignat*}{3}
+    R_{ij} &\sim \bern\Big(\frac{\pt_k - p_k}{1- p_k}\Big), &&\quad (i,j)\in \subb{k}, \forall k\\
+    R_{ij} &\sim \bern(\qt_{k \ell}/q_{k \ell}), &&\quad (i,j)\in \subb{k} \times \subb{\ell}, \forall k < \ell
+   \end{alignat*}
+   independently from $A$. Extend $R$ symmetrically, by setting $R_{\subb{k}\subb{\ell}} = R_{\subb{k}\subb{\ell}}^T$ for $k > \ell$. Let 
+   \begin{alignat*}{3}
+    \At_{ij} &:= 1-(1-A_{ij})(1-R_{ij}), &&\quad (i,j)\in \subb{k}, \forall k\\
+    \At_{ij} &:= A_{ij}R_{ij}, &&\quad (i,j)\in \subb{k}\times \subb{\ell}, \forall k < \ell
+   \end{alignat*}
+   and extend symmetrically. It is easy to verify that $\At$ has distribution $\bBM_m(\Qmt)$. Moreover, by construction $\At \ge A$ on $\supp(\Xtru)$ and $\At \le A$ on $\supp(\Xtru)^c$. The result now follows from Lemma~\ref{lem:deterministic:nesting}.
+\end{proof}
+
+
+\section{Proof of Lemma~\ref{LEM:SUFF:COND:EXACT:RECOV}}\label{sec:proof:suff:cond:exact:recov}
+To prove the lemma, we need the following intermediate result.
+\begin{lem}\label{LEM:BLOCK:CONSTANCY}
+  Let $X\in\Symm{n}$ with $\rangeS(X) \subset \Span\{\onev_{\subb{k}}\}$. Then $X = B \otimes \onem_m$ for some $B \in \Symm{K}$, that is, $X$ is block-constant.
+\end{lem}
+\begin{proof}
+   Note that $\onev_{\subb{k}} = \bv{k} \otimes \onev_m$ where $\bv{k} = \basisv{k}{K}$ is the $k$-th basis vector of $\reals^K$.
+  An eigenvector $v_j$ of $X$ will be of the form $v_j = \sum_k \alpha_k^j \onev_{\subb{k}} = (\sum \alpha_k^j \bv{k}) \otimes \onev_m = u_j \otimes \onev_m$  for some $u_j \in \reals^K$. Then,
+  \begin{align*}
+    X = \sum_j \beta_j v_j v_j^T 
+      &= \sum_j \beta_j (u_j \otimes \onev_m) (u_j \otimes \onev_m)^T \\
+      &= \sum_j \beta_j (u_j u_j^T) \otimes(\onev_m \onev_m^T) = \big(\sum_j \beta_j u_j u_j^T\big) \otimes \onem_m.
+   \end{align*} 
+
+\end{proof}
+
+\begin{proof}[Proof of Lemma~\ref{LEM:SUFF:COND:EXACT:RECOV}.]
+  Conditions (A1) and (A2) together satisfy (CSa) and (CSb) for $\Xtru$ and $\dualtri$, in addition to dual feasibility. Hence, $\Xtru$ is an optimal solution of the primal problem. To show uniqueness, let $X$ be any optimal primal solution. Then $X$ and the specific triple $\dualtri$ assumed in the statement of the lemma should together satisfy optimality conditions. (CSb) for $X$ (and the triple) implies 
+  \begin{align*}
+    \rangeS(X) \subset \ker\big(\Lambda(\mu,\nu,\Gamma)\big) = \Span\{\onev_{\subb{k}}\}
+  \end{align*}
+  by (A1), which then implies $X = B \otimes \onem_m$ for some $B = (b_{k \ell})\in \Symm{K}$ by Lemma~\ref{LEM:BLOCK:CONSTANCY}. 
+  Note that this means $X_{\subb{k} \subb{\ell}} = b_{k \ell} \onem_m$.
+  Now, (CSa) for $X$ implies
+  \begin{align*}
+    0 = X_{\subb{k}\subb{\ell}}  \circ \Gamma_{\subb{k}\subb{\ell}} = b_{k \ell} \Gamma_{\subb{k}\subb{\ell}}, \quad \text{for}\; k \neq \ell
+  \end{align*}
+  using $\onem_m \circ D = D$, for any $D$. But since $\Gamma_{\subb{k}\subb{\ell}}$ is not identically zero by (A3), we should have $b_{k\ell} = 0$, for $k\neq \ell$. One the other hand, primal feasibility of $X$, in particular, $X_{ii} = 1$ implies $b_{kk} = 1$. That is, $B = I_K$, hence $X = I_K \otimes \onem_m = \Xtru$.
+\end{proof} 
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Moved from Main
+
+\subsection{Proof of Theorem~\ref{thm:consist:SDP2}: primal-dual witness for SDP-$2'$}\label{sec:proof:consist:SDP2}
+% \subsubsection{}
+For SDP-$2'$, the linear condition $\Lc_2(X) = b_2$ is just the scalar equation $\ip{\onem_n,X} = n^2/K = n m$. The dual variable $\mu$ is a scalar in this case, and we have $b_2 = m n$ and $\Lc_2^*(\mu) = \mu \onem_n$. Hence, 
+% the dual problem can be written as
+% \begin{align*}
+%   \def\arraystretch{1.3}
+%   \begin{array}{ll}
+%     \min & \mu  (mn) + \sum_i \nu_i \\
+%     \text{s.t.} 
+%     & \Lambda:= \mu \onem_n + \diag^*(\nu) -A - \Gamma \succeq 0  \\
+%     & \Gamma \ge 0 
+%   \end{array}
+% \end{align*}
+%and 
+we have (cf.~\eqref{eq:Lambda:def:gen})
+\begin{align}\label{eq:Lambda:def:SDP2}
+  \Lambda = \Lambda(\mu,\nu,\Gamma) = \mu \onem_n + \diag^*(\nu) -A - \Gamma .
+\end{align}
+
+
+Let $\dg{}{k} = A \onev_{\subb{k}}$ be the vector of node degrees relative to subgraph $\subb{k}$. We denote its $i$th element by $\dg{i}{k} = \sum_{j \in \subb{k}} A_{ij}$.  Let $\projonep := I_m - \frac1m \onem_m$ be projection onto $\Span\{\onev_m\}^\perp$. The following summarizes our primal-dual construction, modulo the choice of $\mu$:
+\begin{align}\label{eq:nu:def}
+  \nu_i &:=   \dg{i}{k} - \mu m, \quad \text{for} \;i \in S_k,\\
+  \begin{split}
+  \label{eq:Gamma:def}
+  \Gamma_{\subb{k}} &:= 0, \quad  \forall k \\
+  \Gamma_{\subb{k}\subb{\ell}} &:= 
+    \mu \onem_m + \projonep A_{\subb{k}\subb{\ell}} \projonep - A_{\subb{k}\subb{\ell}},
+\end{split}
+\end{align}
+for all $k \neq \ell$.  Note that $\Gamma$ is symmetric. Let
+\begin{align}\label{eq:dav:def}
+    \Delta := A - \ex[A], \quad \dav{k}\ell := \frac1m \sum_{i \in \subb{k}} \dg{i}{\ell} =
+       \frac1m \sum_{j \in \subb{\ell}} \dg{j}{k}.
+\end{align}
+% The following lemma, proved in~\ref{suppA} (Section~\ref{sec:proof:valid:Gamma:SDP2})
+ The following lemma, proved in~Section~\ref{sec:proof:valid:Gamma:SDP2}
+ , verifies the validity of this construction.
+
+\begin{lem}\label{LEM:VALID:GAMMA:SDP2}
+  Let $(\mu,\nu,\Gamma)$ be as in~ \cref{eq:nu:def,eq:Gamma:def}. Then, $\Gamma$ verifies (A2) and~\eqref{eq:A1:equiv:1} holds for all $\mu$. In addition,
+  \begin{itemize}
+  \setlength\itemsep{0em}
+    %\item[-] If $q \neq 0$, it verifies (A3) with probability 1. 
+    \item[(a)] $\Gamma$ is dual feasible, i.e. $\Gamma \ge 0$, if for all $i\in \subb{k}, j \in \subb{\ell}, k \neq \ell$, 
+    \begin{align}\label{eq:mu:low:bound}
+      \mu m \ge \dg{i}{\ell}  + \dg{j}{k} - \dav{k}\ell,
+    \end{align}
+    and satisfies (A3) if at least one inequality is strict for each pair $k \neq \ell$.
+    \item[(b)] $\Gamma$ verifies~\eqref{eq:A1:equiv:2} if
+    \begin{align}\label{eq:Delta:up:bound:SDP2}
+      (\rho - \mu) m > \mnorm{\Delta}, \quad \text{where} \quad \rho := \min_k \min_{i \in \subb{k}} \dg{i}{k} /m.
+    \end{align}
+
+    % \begin{align}\label{eq:nu:Delta:condtions}
+    %   \diag^*(\nu_{\subb{k}}) \ge \nub I_m, \quad \text{and} \qquad \mnorm{\Delta_{\subb{k}}} \le \delta.
+    % \end{align}
+  \end{itemize}
+\end{lem}
+
+    We note that choosing $\mu m$ to be the maximum of the RHS of~\eqref{eq:mu:low:bound}, i.e.,
+    \begin{align*}
+      \max_{k,\ell} \max_{i \in \subb{k},\, j \in \subb{\ell}} \big[\dg{i}{\ell}  + \dg{j}{k} - \dav{k}\ell\big]
+    \end{align*}
+    together with~\eqref{eq:Delta:up:bound:SDP2} gives a deterministic condition for the success of SDP-$2'$. 
+    %In~\ref{suppA} (Section~\ref{sec:prob:cond:ppbal}),  we give a probabilistic version of this condition which completes the proof of Theorem~\ref{thm:consist:SDP2}.
+    In~Section~\ref{sec:prob:cond:ppbal}, we give a probabilistic version of this condition which completes the proof of Theorem~\ref{thm:consist:SDP2}.
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\section{Proof of Lemma~\ref{LEM:BLOCK:CONSTANCY}}
+ 
+
+
+
+\section{Proof of Lemma~\ref{LEM:VALID:GAMMA:SDP2}}\label{sec:proof:valid:Gamma:SDP2}
+We start by seeing how far the KKT conditions determine the dual variables and how much freedom in choosing them is left. In accordance with condition (A2), we set $\Gamma_{\subb{k}} := 0$.
+%Let $V := \diag^*(\nu)$. 
+Then, \eqref{eq:A1:equiv:1} holds if and only if $\Lambda_{\subb{k}} \onev_m = 0$ and $ \;\Lambda_{\subb{k}^c\subb{k}} \onev_m = 0$, or equivalently,
+\begin{alignat}{4}
+\label{eq:A1:equiv:1a}
+  \Lambda_{\subb{k}} \onev_m 
+    &= (\mu  \onem_m + \diag^*(\nu_{\subb{k}})- A_{\subb{k}} ) \onev_m 
+    &&= \mu m \onev_m + \nu_{\subb{k}} - A_{S_k} \onev_m  
+    &&= 0\\
+\label{eq:A1:equiv:1b}
+  \Lambda_{\subb{k}^c\subb{k}} \onev_m 
+    &= [\mu \onem_{n-m,m} - (A+\Gamma)_{\subb{k}^c\subb{k}}] \onev_m 
+    &&= \mu m \onev_{n-m} - (A+\Gamma)_{\subb{k}^c\subb{k}} \onev_m 
+    &&= 0
+\end{alignat}
+Let $\dg{}{k} = A \onev_{\subb{k}}$ be the vector of node degrees relative to community/subgraph $\subb{k}$. We denote its $i$th element as $\dg{i}{k} = \sum_{j \in \subb{k}} A_{ij}$. Note also that $A_{S_k}\onev_m = [\dg{}{k}]_{\subb{k}}$.
+Then, setting $\nu_i :=   \dg{i}{k} - \mu m$ for $i \in \subb{k}$ 
+verifies~\eqref{eq:A1:equiv:1a}. To verify~\eqref{eq:A1:equiv:1b}, we need to have
+\begin{align}
+  (A+\Gamma)_{\subb{k}\subb{\ell}} \onev_m = \mu m \onev_m, \quad \text{for all}\;\ell \neq k.
+  \label{eq:Gamma:row:sum:cond}
+\end{align}
+Note that the same holds for $(A+\Gamma)_{\subb{\ell}\subb{k}}$. That is, every row and column of $(A+\Gamma)_{\subb{k}\subb{\ell}}$, $k\neq \ell$ should sum to a constant ($= \mu m$). 
+In other words, $\onev_m$ is a right and left eigenvector of $(A+\Gamma)_{\subb{k}\subb{\ell}}$ associated with eigenvalue $\mu m$. By spectral theorem (i.e., SVD), we should have
+\begin{align}\label{eq:B:def:SDP2}
+  (A+\Gamma)_{\subb{k}\subb{\ell}} = \mu \onem_m + B_{\subb{k}\subb{\ell}} 
+\end{align}
+where $B_{\subb{k}\subb{\ell}}$ acts on $\Span\{\onev_m\}^\perp$. 
+To satisfy~\eqref{eq:A1:equiv:2}, we first note that
+\begin{align*}
+  \Span\{\onev_{S_k}\}^\perp = 
+  \Big\{ u = \sum_k e_k \otimes u_k:\; u_k \in \reals^m, \, \onev_m^T u_k = 0, \, \forall k\Big\}, 
+  \, \text{where}\; e_k = e_k^{(m)}.
+\end{align*}
+In other words, $\Span\{\onev_{S_k}\}^\perp$ is the set of vectors $u$ such that each sub-vector $u_{S_k}$ sums to zero. Now, take $u \in \Span\{\onev_{S_k}\}^\perp$. Then, $u = \sum_k u_{\subb{k}} = \sum_k e_k \otimes u_k$, for some $\{u_k\} \subset \Span\{\onev_m\}^\perp$, and we have
+  \begin{align}\label{eq:u:Lambda:u:expan}
+    u^T \Lambda u = \sum_{k,\ell} u_{\subb{k}}^T \Lambda \,u_{\subb{\ell}} = 
+    \sum_{k,\ell} u_k^T \Lambda_{\subb{k}\subb{\ell}} \,u_\ell =\; 
+    \sum_{k} u_k^T \Lambda_{\subb{k}} u_k + 
+    \sum_{k\neq \ell} u_k^T \Lambda_{\subb{k}\subb{\ell}} u_\ell.
+  \end{align}
+Recall that $\Delta := A - \ex[A]$ where $[\ex A]_{\subb{k}} = p \onem_m$ and $[\ex A]_{\subb{k}\subb{\ell}} = q\onem_m, \; k \neq \ell$.
+% \begin{align}
+%   \label{eq:Delta:def}
+%   \Delta := A - \ex A, \quad \text{where}\quad  \quad .
+% \end{align}
+  Then, $A_{\subb{k}} = p \onem_m + \Delta_{\subb{k}}$ and from~\eqref{eq:Lambda:def:SDP2}, we have $\Lambda_{\subb{k}} =  \mu \onem_m + \diag^*(\nu_{\subb{k}}) - A_{\subb{k}}$. It follows that
+  \begin{align*}
+    u_k^T \Lambda_{\subb{k}} u_k 
+      = u_k^T\big[(\mu -p) \onem_m + \diag^*(\nu_{\subb{k}}) - \Delta_{\subb{k}} \big] u_k 
+      = u_k^T\big( \diag^*(\nu_{\subb{k}}) - \Delta_{\subb{k}} \big) u_k 
+  \end{align*}
+  using the fact that $u_k^T \onem_m u_k = (\onev_m^T u_k)^2 = 0$. We also note from~\eqref{eq:nu:def} that
+  \begin{align*}
+    \diag^*(\nu_{\subb{k}}) = \diag^*([d(\subb{k})]_{\subb{k}}) - \mu m I_m.
+  \end{align*}
+
+  On the other hand, for $k \neq \ell$, we have $\Lambda_{\subb{k}\subb{\ell}} = \mu \onem_m - (A+\Gamma)_{\subb{k}\subb{\ell}} = - B_{\subb{k} \subb{\ell}}$ from~\eqref{eq:Lambda:def:SDP2} and~\eqref{eq:B:def:SDP2}. To summarize, 
+  \begin{align}\label{eq:u:Lambda:u:SDP2}
+    u^T \Lambda u = \sum_k u_k^T\big( \diag^*([d(\subb{k})]_{\subb{k}}) - \Delta_{\subb{k}} \big) u_k 
+    - \mu m \sum_{k} \|u_k\|^2 - \sum_{k \neq \ell} u_k^T B_{\subb{k} \subb{\ell}} u_\ell.
+  \end{align}
+  To satisfy~\eqref{eq:A1:equiv:2}, we want $u^T \Lambda u$ to be big, which is the case if both $\mu$ and $\{B_{\subb{k} \subb{\ell}}\}$ are small. We are free to choose them subject to dual feasibility constraint $\Gamma \ge 0$, which translates to
+  $\mu \onem_m + B_{\subb{k}\subb{\ell}} \ge A_{\subb{k}\subb{\ell}}$. Our construction of $\Gamma_{\subb{k}\subb{\ell}}$ in~\eqref{eq:Gamma:def} corresponds to $B_{\subb{k}\subb{\ell}} := \projonep A_{\subb{k}\subb{\ell}} \projonep $. See also Remark~\ref{rem:trade-off:mu:B} for a discussion of the trade-off involved.
+
+\begin{proof}[Proof of part~(a)]
+  %(A2) and~\eqref{eq:Gamma:row:sum:cond} hold by construnction.
+  To verify dual feasibility, we use  $\projonep e_j = e_j - \frac1m \onev_m$ to write
+  \begin{align*}
+    [\Gamma_{\subb{k}\subb{\ell}}]_{ij} 
+    = e_i^T \Gamma_{\subb{k}\subb{\ell}} e_j 
+    &= \mu + (e_i - \frac1m \onev_m)^T A_{\subb{k}\subb{\ell}} (e_j - \frac1m \onev_m) - A_{ij}  \\
+    &= \mu - \frac1m e_i^T A_{\subb{k}\subb{\ell}} \onev_m - \frac1{m} \onev_m^T A_{\subb{k}\subb{\ell}} e_j 
+      + \frac1{m^2}  \onev_m^T A_{\subb{k}\subb{\ell}} \onev_m\\
+    &= \mu - \frac1{m} \big[\dg{i}{\ell}  + \dg{j}{k} - \dav{k}\ell \big] \ge 0
+  \end{align*}
+  (A3) holds if $ [\Gamma_{\subb{k}\subb{\ell}}]_{ij} > 0$ for at least one $(i,j) \in \subb{k} \times \subb{\ell}$, for each pair $k \neq \ell$, which is equivalent to the stated condition.
+\end{proof}
+\begin{proof}[Proof of part~(b)]    
+  To verify~\eqref{eq:A1:equiv:2}, we recall representation~~\eqref{eq:u:Lambda:u:SDP2}. By assumption $ \diag^*([d(\subb{k})]_{\subb{k}}) \succeq \rho m I_m$ for all $k$. Also, using 
+  $B_{\subb{k}\subb{\ell}} = \projonep A_{\subb{k}\subb{\ell}} \projonep$ we have
+  \begin{align*}
+    u_k^T B_{\subb{k}\subb{\ell}} u_\ell = u_k^T \projonep (q\onem_m + \Delta_{\subb{k}\subb{\ell}}) \projonep u_\ell = 
+    u_k^T \projonep \Delta_{\subb{k}\subb{\ell}} \projonep u_\ell = u_k^T \Delta_{\subb{k}\subb{\ell}}  u_\ell
+  \end{align*}
+  for $\{ u_k \} \subset \Span\{\onev_m\}^\perp$.
+  From~\eqref{eq:u:Lambda:u:SDP2} it follows that
+  \begin{align*}
+    u^T \Lambda u &\ge \rho m \sum_{k} \vnorm{u_k}^2 - \sum_k u_k^T \Delta_{\subb{k}} u_k - \mu m \sum_{k} \vnorm{u_k}^2   
+      -\sum_{k \neq \ell}  u_k^T \Delta_{\subb{k}\subb{\ell}}  u_\ell \\
+      &= (\rho - \mu) m \|u\|^2 - u^T \Delta u \\
+      &\ge \big[(\rho- \mu)m - \mnorm{\Delta}\big] \,\|u\|^2.
+  \end{align*}
+\end{proof}
+
+\begin{rem}\label{rem:trade-off:mu:B}
+    The trade-off in choosing $\mu$ and $B_{\subb{k}\subb{\ell}}$ can be abstracted away in the following subproblem:
+    \begin{align*}
+      h(\mu) := \min \big\{ \| \Bt\|: \; \mu \onem_m + \Bt \ge \At, \;  \rangeS(\Bt) \subset \Span\{\onev_m\}^\perp \big\}  
+     \end{align*}
+     where $\At \in \{0,1\}^{m \times m}$ is a non-symmetric adjacency matrix (say, of a directed Erdos-Renyi graph with connection probability $q$). If $\mu = 1$, one can take $\Bt = 0$, hence $h(1) = 0$. As one decreases $\mu$ from $1$, the feasible set of the problem shrinks until the problem becomes infeasible for some $\mu_0 \in (0,1)$, if $\At \neq 0$. We have chosen $\Bt = \projonep \At \projonep$, essentially the largest choice, to make $\mu$ as small as possible. This might not in general be optimal. It would be interesting to study $h(\mu)$ more carefully. For example, another choice is $\Bt = P_V \At P_V$ where $V$ is a proper subspace of $\Span\{\onev_m\}^\perp$ of low dimension. This increases $\mu$, but decreases $h(\mu)$, helping us to better control the contributions of off-diagonal blocks in~\eqref{eq:u:Lambda:u:SDP2}.
+  \end{rem}
+
+
+\section{Probabilistic conditions for $\bsymBM$}\label{sec:prob:cond:ppbal}
+We will show when the construction of $(\mu,\nu,\Gamma)$ in~\eqref{eq:nu:def} and~\eqref{eq:Gamma:def} works for the balanced planted partition model,  completing the proof of Theorem~\ref{thm:consist:SDP2}. We start we a consequence of Proposition~\ref{prop:key:adj:concent}.
+
+
+\begin{cor}\label{cor:adj:concent:SDP2}
+  Let $A = (A_{ij}) \in \{0,1\}^{n \times n}$ be drawn from $\bsymBM(p,q)$ with $p \ge (C' \log m)/m $ and $q \ge (C' \log n)/ n$. Then, w.p. at least $1- c (K m^{-r}+ n^{-r})$, 
+  \begin{align*}
+    \mnorm{A-\ex A} \le C (\sqrt{p\, m} + \sqrt{q n}).
+  \end{align*}
+\end{cor}
+\begin{proof}
+  Let $\Delta:= A - \ex A$ and decompose it into its diagonal and off-diagonal blocks. In particular, let $\Stru := \supp(\Xtru) = \bigcup_k \subb{k} \times \subb{k}$ and let $\Stru^c$ be its complement. Then,
+  \begin{align*}
+    \mnorm{\Delta} \le  \mnorm{\onem_{\Stru} \circ \Delta} +  \mnorm{\onem_{\Stru^c} \circ \Delta} = \max_k \mnorm{\Delta_{\subb{k}}} +  \mnorm{\onem_{\Stru^c} \circ \Delta}
+  \end{align*}
+  $\onem_{\Stru^c} \circ \Delta$ is an $n \times n$ matrix whose entries have variance $\le q$, hence $\mnorm{\onem_{\Stru^c} \circ \Delta} \le C \sqrt{q n}$ w.p. at least $1-cn^{-r}$. Each $\Delta_k$ is an $m \times m$ matrix whose entries have variance bounded by $p$, hence $\mnorm{\Delta_k} \le C \sqrt{pm}$ w.p. at least $1-c m^{-r}$, for each $k$. The result follows from union bound.
+\end{proof}
+
+
+
+The following consequence of Bernstein's inequality summarizes the concentration of $\dg{}{k}$ around their mean. For simplicity, we will assume that the diagonal of $A$ is also filled with $\bern(p)$ variates. This has no effect on the optimal primal solution due to the diagonal conditions $X_{ii} = 1$. Recall that
+\begin{align*}
+  m K = n, \quad \pb := p m, \quad \qb := q m.
+\end{align*}
+
+\begin{lem}\label{LEM:DEG:CONCENT:SDP2}
+  % \label{lem:3:concent}
+  Let $\gamma := \sqrt{ (4c_1 \log n)/ \pb}$ and $\zeta := \sqrt{ (4c_2 \log n)/ \qb}$ and assume $\gamma,\zeta \in [0,3]$. Then,%$for $c_1 \ge 2$ and $c_2 \ge 3$. Then,
+  \begin{alignat*}{4}
+    \dg{i}{k} &\ge \pb(1-\gamma), 
+      &&\; i \in \subb{k}, \forall k 
+      &&\quad \text{w.p. at least $1 - n^{-(c_1-1)}$, and} \\
+      \big| \dg{i}{\ell} - \qb \big| &\le \zeta \qb, 
+      &&\; i \in \subb{k}, \forall (k \neq \ell),
+      &&\quad \text{w.p. at least $1-2 m^{-1}n^{-(c_2-2)}$}.
+  \end{alignat*}
+\end{lem}
+The proof is deferred to the Appendix~\ref{sec:proof:deg:concent:SDP2}.
+Assume now that the conditions of Lemma~\ref{LEM:DEG:CONCENT:SDP2} (on $\gamma$ and $\zeta$) are met.
+% \begin{equation}
+% \begin{aligned}
+% \label{eq:degree:bounds}
+%   \pp m(1-\gamma) &\le \dg{i}{k} , &&\quad i\in \subb{k},\; \forall k, \\
+%   \qp m(1-\zeta) &\le \dg{i}{\ell} \le \qp m(1+\zeta), &&\quad i\in \subb{k},\; \forall k\neq\ell.
+% \end{aligned} 
+% \end{equation}
+Then w.h.p., $\dav{k}{\ell}$ is also in $[\qb (1-\zeta),\qb (1+\zeta)]$, for $k \neq \ell$, so that 
+\begin{align*}
+  \dg{i}{\ell}  + \dg{j}{k} - \dav{k}\ell \le 2\qb(1+\zeta)-\qb(1-\zeta) = \qb(1+3\zeta).
+\end{align*}
+Thus, to satisfy~\eqref{eq:mu:low:bound}, it is enough to have $\mu m \ge \qb (1+3\zeta)$. On the other hand, Lemma~\ref{LEM:DEG:CONCENT:SDP2} implies that $\displaystyle m \rho := \min_k \min_{i \in \subb{k}} \dg{i}{k} \ge \pb - \pb \gamma$. Then,
+\begin{align*}
+  (\rho-\mu) m &\ge \pb - \pb\gamma - \qb - 3\qb \gamma \\
+         &\ge \pb - \qb - \sqrt{4c_1\pb \log n} - 3 \sqrt{4c_2 \qb \log n}  
+\end{align*}
+By Corollary~\ref{cor:adj:concent:SDP2}, w.h.p. $\mnorm{\Delta} \le C(\sqrt{\pb} + \sqrt{\qb K})$, where we have used $q n = \qb K$. Then, to satisfy~\eqref{eq:Delta:up:bound:SDP2}, it is enough to have
+\begin{align*}
+   \pb - \qb - \sqrt{4c_1\pb \log n} - 3 \sqrt{4c_2 \qb \log n} > C(\sqrt{\pb} + \sqrt{\qb K})
+\end{align*}
+which is implied by
+\begin{align*}
+  \pb - \qb> (C+\sqrt{4c_1})\sqrt{\pb \log n} + (C+3\sqrt{4c_2})\sqrt{\qb K \log n}
+\end{align*}
+in turn implied by
+\begin{align}\label{eq:SDP2:log:cond}
+  \pb - \qb > C_2 ( \sqrt{\pb \log n} + \sqrt{ \qb K \log n}).
+\end{align}
+
+Auxiliary conditions we needed on $\pb$ and $\qb$ were $\pb \ge (4c_1/9) \log n$ and $\qb \ge (4c_2/9) \log n$ from Lemma~\ref{LEM:DEG:CONCENT:SDP2} and $\pb \ge C' \log m$ and $n q > C' \log n$ from Corollary~\ref{cor:adj:concent:SDP2}. We can drop the lower bounds on $q$ due to Corollary~\ref{cor:BM:ordering}. The lower bounds on $\pb$ are implied by $\pb \ge (C' \vee (4c_1/9)) \log n$. This completes the proof. To get to the form in which the theorem is stated, replace $c_1$ with $c_1 + 1$ and $c_2$ with $c_2 + 2$, and divide~\eqref{eq:SDP2:log:cond} by $\log n$.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Proof of Lemma~\ref{LEM:DEG:CONCENT:SDP2}}\label{sec:proof:deg:concent:SDP2}
+We recall the following version of Bernstein inequality.
+\begin{prop}[Bernstein]
+  Let $\{X_i\}$ be independent zero-mean RVs, with $|X_i| \le 1$ almost surely, and let $v := \sum_i \ex[X_i^2]$, then
+  \begin{align*}
+    \pr \Big( \sum_{i=1}^n X_i > v t\Big) \le \exp [-v \phi(t)], \; t >0, 
+      \quad \text{where} \; \phi(t):= \frac{t^2}{2(1 + t/3)}.
+  \end{align*}
+\end{prop}
+% \begin{proof}
+   For the first assertion, note that for $i \in \subb{k}$, $\dg{i}{k} = \sum_{j \in \subb{k}} A_{ij}$ is a binomial random variable with mean $mp$ and variance $mp(1-p) \le mp$. then applying Bernstein's with $v = mp$ and $t = \gamma$, we have
+  $
+    \pr [\dg{i}{k} - mp < - mp\gamma ] \le \exp( -mp \, \phi(\gamma)).
+  $
+  It follows from union bound that 
+  \begin{align*}
+    \pr \Big(\min_{k} \min_{i \in \subb{k}}\, \dg{i}{k} \ge \pb (1-\gamma) \Big) \ge 1- m K \exp(-\pb \phi(\gamma))
+  \end{align*}
+  For $\gamma \in [0,3]$, we have $\phi(\gamma) \ge \gamma^2/4$. It follows that
+  $mK \exp(-\pb \phi(\gamma)) \le n \exp(-\pb \gamma^2/4) \le n n^{-c_1}$, proving the first assersion. The second assersion follows similarly, by noting that $\dg{i}{\ell}$ is binomial with mean $\qb = qm$ for $i \in \subb{k}$, $k \neq \ell$. It follows from two-sided Bernstein and union bound that
+  \begin{align*}
+    \pr \Big(\max_{k\neq\ell} \max_{i \in \subb{k}}\, \big| \dg{i}{\ell} - \qb \big| \le \zeta \qb \Big) 
+    &\ge 1-  \big[2\tbinom{K}{2} m\big] 2 \exp(-\qb \phi(\zeta)) \\
+    &\ge 1 - (m K)^2 m^{-1} 2 \exp(-\qb \zeta^2/4).
+  \end{align*}
+  The rest of the argument follows as before.
+
+
+
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Proof of Proposition~\ref{prop:failure:SDP-2}}\label{sec:proof:prop:failure:SDP-2}
+  The implication $(a)\implies(b)$ follows since in the balanced case $\xi_k = 1, \forall k$.  Let us explain how part~(b) implies part~(c): Let $M := \ex[A]$ for a weakly but not strongly assortative block model. Let $\Mt$ be the matrix obtained from $M$ by setting all the diagonal blocks identically equal to one, except for one of the blocks that violates strong assortativity. Part~(b) applies to $\Mt$ with $|I^c| = 1$ and hence $\text{SDP}_{sol}(\Mt) \neq \{X_0\}$. It then follows from Lemma~\ref{lem:deterministic:nesting} that $\text{SDP}_{sol}(M) \neq \{X_0\}$ which is the desired result.
+
+  The remainder of this section is devoted to proving part~(a).
+  %
+    We take dual variable $\Lambda$ be of the following form
+  \begin{align}\label{eq:Lam:gen:form:2}
+    \Lambda &= \sum_{k \in I} \lambda_k (- \onem_{S_k} + \bs_k I_{S_k}),\quad \text{with}\; \lambda_k \ge 0.
+  \end{align}
+  %with $\lambda_k > 0$. (This will ensure the kernel is exactly what we want?)
+  In order to satisfy $\Lambda X = 0$, it is enough to have $\Lambda \onev_{S_r} = 0, \; r \in I$. This holds for the form given in~\eqref{eq:Lam:gen:form:2}, namely, $\Lambda \onev_{S_r} = \lambda_r (- \onem_{S_r} + \bs_r I_r) \onev_{S_r} = \lambda_r(-\bs_r I_{S_r} + \bs_r I_{S_r}) = 0$. We also assume the following form for $\Gamma$,
+  \begin{align}\label{eq:Gam:546}
+    \Gamma &= \sum_{k \neq \ell } \rho_{k \ell} \onem_{S_k S_\ell}  + 
+    \sum_{k \notin I} \big[ \gamma_k \onem_{S_k} - \gamma_k I_{S_k}\big].
+  \end{align}
+  For $k \in I$, we have $\alpha_{kk} \neq 0$, and (CSa) implies $\Gamma_{S_k} = 0$. We also have $X_{ii} = 1, \,\forall i$, hence $\Gamma_{ii} = 0, \,\forall i$. The form given in~\eqref{eq:Gam:546} respects these conditions.
+
+  \medskip
+  Let $M := \ex[A]$ and recall that $\Lambda = \mu \onem_n + \diag^*(\nu)  - (M+\Gamma)$, hence~\eqref{eq:Lam:gen:form:2} is equivalent to 
+  \begin{align}
+    \mu \onem_{\bs_k \bs_\ell} - (M+\Gamma)_{S_k S_\ell} &= 0, \quad k \neq \ell \label{eq:cond:167}\\
+    \mu \onem_{\bs_k} + \diag^*(\nu_{S_k}) - M_{S_k} &= -\lambda_k \onem_{\bs_k} + \lambda_k \bs_k I_{\bs_k}, \quad k \in I \label{eq:cond:267}\\
+    \mu \onem_{\bs_k} + \diag^*(\nu_{S_k}) - (M+\Gamma)_{S_k} &= 0, \quad k \notin I \label{eq:cond:367}.
+  \end{align}
+
+  Recall that $M_{S_k S_\ell} = q_{k\ell} \onem_{\bs_k \bs_\ell}$ for $k \neq \ell$, and $M_{S_k} = p_k \onem_{\bs_k}$. Hence,~\eqref{eq:cond:167} is equivalent to $\forall (k\neq \ell)\; \rho_{k\ell} = \mu - q_{k\ell}$. Let us now simplify condition~\eqref{eq:cond:267}. 
+  %implying 
+  %\begin{align*}
+  % \mu \onem_{S_k} + \diag^*(\nu_{S_k}) - p_k \onem_{S_k} = -\lambda_k \onem_{S_k} + \lambda_k \bs_k I_{S_k}.
+  %\end{align*}
+  Looking at the diagonal, we have $\mu + \nu_i - p_k = (\bs_k-1)\lambda_k, \; i \in S_k, \, k \in I$. Looking at the off-diagonal, we have $\lambda_k = p_k - \mu$. Hence, $\nu_i = \bs_k \lambda_k$ for $i \in S_k, k \in I$. Now consider~\eqref{eq:cond:367}. For $k \notin I$, the diagonal gives $\mu + \nu_i - p_k  = 0$ since $A_{ii} = p_k$ and $\Gamma_{ii} = 0$ (because of $X_{ii} = 1$.) Hence, $\nu_i = p_k-\mu$ for $i \in S_k, k \notin I$. The off-diagonal gives $\gamma_k = \mu - p_k$. The following table summarizes these relationships:
+  \begin{align*}
+    \begin{array}{l|l|l}
+      k \in I & \; k \notin I & \forall (k \neq \ell)  \\
+      \hline
+      \lambda_k = p_k - \mu & & \rho_{k\ell} = \mu - q_{k \ell}\\
+      \nu_i = n_k \lambda_k, \, i \in S_k & \nu_i = p_k - \mu,\, i \in S_k\\
+      & \gamma_k = \mu - p_k& 
+    \end{array}
+  \end{align*}
+  (CSa) implies $(\forall k \notin I)\, \beta_k \gamma_k = 0$, and  $(\forall k,\ell \in I, \, k\neq\ell),\; \rho_{k \ell} \,\alpha_{k \ell} = 0$. Together with dual feasibility, namely $\lambda_k \ge 0$, $\gamma_k \ge 0$,  and $\rho_{k\ell} \ge 0$, we obtain the following restrictions on $\mu$,
+  \begin{align}\label{eq:table:325}
+    \begin{array}{c|c|c}
+      k \in I & \; k \notin I & \forall (k \neq \ell)  \\
+      \hline
+      \mu < p_k &  \mu \ge p_k &  \mu \ge q_{k \ell}\\
+      & \beta_k(\mu - p_k) = 0& \alpha_{k \ell} (\mu - q_{k\ell}) = 0,\; k, \ell \in I
+    \end{array}
+  \end{align}
+
+
+  % We have the following conditions
+  % \begin{align*}
+  %   \rho_{k \ell} &= \mu - q_{k\ell} \ge 0, \\
+  %   \lambda_k &= p_k - \mu > 0, \quad k \in I\\
+  %   \nu_i &= \bs_k \lambda_k, \quad i \in S_k,\; k \in I\\
+  %   \nu_i &= p_k-\mu, \quad i \in S_k,\; k \notin I\\
+  %   \gamma_k &= \mu-p_k \ge 0, \quad k \notin I\\
+  %   \alpha_{k \ell} \,\rho_{k \ell} &= 0, \quad k, \ell \in I, \; k \neq \ell\\
+  %   \beta_k \gamma_k  &= 0, \quad k \notin I
+  % \end{align*}
+  % The conditions imposed by the above are
+  % \begin{align*}
+  %   \mu - q_{k\ell} &\ge 0, \quad k\neq \ell \\
+  %   p_k - \mu &> 0, \quad k \in I \\
+  %   \mu - p_k &\ge 0, \quad k \notin I, \\
+  %   \alpha_{k \ell} (\mu - q_{k\ell}) &= 0  \quad k, \ell \in I, \; k \neq \ell\\
+  %   \beta_k(\mu - p_k)  &= 0, \quad k \notin I.
+  %\end{align*}
+  It is interesting to note that when $\{q_{k \ell}, k \neq \ell\}$ are distinct (which is not assumed here), at most one of $\{\alpha_{k \ell}, k < \ell,\; k, \ell \in I\}$ is nonzero. This is enforced by the condition in the last row and column of~\eqref{eq:table:325}, since $\mu$ can be equal to at most one of $q_{k\ell}$. 
+
+
+  Recall that $(k_0,\ell_0) := \argmax_{k \neq \ell} q_{k\ell}$ which is assumed to be unique, and $I := \{k :\; p_k \ge \max_{k \neq \ell} q_{k \ell}\}$. By the assumption of weak assortativity, $\{k_0,\ell_0\} \subset I$.
+  Let $\mu = q_{k_0 \ell_0}$. Then, the condition in the last row and column of~\eqref{eq:table:325} implies that $\alpha_{k \ell} = 0, \forall k,\ell \in I\setminus\{ k_0,\ell_0\},\; k \neq \ell$, that is, only $\alpha_{k_0 \ell_0} = \alpha_{\ell_0 k_0}$ could be nonzero. Also, note that with this choice of $\mu$, the first row of~\eqref{eq:table:325} is satisfied.
+
+  Since $\mu > p_k$ for $k \in I^c := [K] \setminus I = \{ k: p_k < q_{k_0\ell_0}\}$, the condition in the second row and column of~\eqref{eq:table:325}, implies that $\beta_k = 0$ for $k \notin I$. It remains to verify primal feasibility, namely, $\ip{X,\onem_n} = m n$. Recall that $\bs_k = \xi_k m$ with $\xi_k \ge 1$ (since $m = \min_k \bs_k$). We need to have
+  \begin{align*}
+    \ip{X,\onem_n} = \sum_{k \in I} \bs_k^2 + 2 \alpha_{k_0 \ell_0} \,\bs_{k_0} \bs_{\ell_0} + \sum_{k \notin I} \bs_k = n m
+  \end{align*}
+  Writing $n = \sum_{k} \bs_k$ and dividing by $m$, this is equivalent to
+  \begin{align*}
+    \sum_{k \in I} \xi_k^2 + 2 \alpha_{k_0 \ell_0} \xi_{k_0} \xi_{\ell_0} + \frac1 m \sum_{k \notin I} \xi_k = \sum_k \xi_k
+  \end{align*}
+  Some algebra gives the expression $\alpha_{k_0 \ell_0} = \alpha^*_{k_0 \ell_0}$ where the latter is given in~\eqref{eq:alpha:k0:ell0}.
+  %
+  Under the stated assumption, $\alpha_{k_0 \ell_0} \in [0,1]$, the constructed solution is primal feasible and the proof is complete. 
+
+
+  % \bigskip
+
+
+
+  % We also need to satisfy primal feasibility. In particular, $\ip{X,\onem_n} =  m n = m^2 K $, giving
+  % \begin{align*}
+  %   |I| m^2 + m^2 \sum_{k, \ell \in I, \; k \neq \ell} \alpha_{k \ell} + \sum_{k \notin I} [\beta_k m^2 + (1-\beta_k) m] = m^2 K.
+  % \end{align*}
+
+  % Let us assume that at most one of $\alpha_{k \ell}, k \neq \ell,\; k, \ell \in I$ is nonzero. This is true if all $q_{k \ell}, k \neq \ell$ are distinct, since then $\mu$ can be equal to at most one of them. Suppose without loss of generality that the potentially nonzero element is $\alpha_{k_0 \ell_0}$, for $k_0,\ell_0 \in I$ with $k_0 \neq \ell_0$. Then,
+  % \begin{align*}
+  %   |I| + 2 \alpha_{k_0 \ell_0} + \sum_{k \notin I} [ \beta_k + (1-\beta_k) \frac1m] = K.
+  % \end{align*}
+  % Some algebra shows that 
+  % \begin{align*}
+  %   \frac{m}{m-1} 2 \alpha_{k_0 \ell_0} + \sum_{k \notin I} \beta_k + |I| = K.
+  % \end{align*}
+
+  % Recall that $(k_0,\ell_0) = \argmax_{k \neq \ell} q_{k\ell}$ which is assumed to be unique and let $\mu = q_{k_0 \ell_0}$. Then all $\alpha_{k \ell}, k \neq \ell$ have to be zero except $\alpha_{k_0 \ell_0}$. %(Alternatively, we could have taken $I = \{k_0, \ell_0\}$.)
+  % Let $I := \{k :\; p_k > \max_{k \neq \ell} q_{k \ell}\}$. Then, conditions~? and~? are satisfied. Assuming that none of $\{p_k\}$ is equal to $\max_{k\neq \ell} q_{k \ell}$, condition~? implies $\beta_k = 0, k \neq I$. The only remaining condition that we need to satisfy is the feasibility of $X$ which is equivalent to $\alpha_{k_0 \ell_0} \in [0,1]$. (Note that this also guarantees $X \succeq 0$.)
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5
+\section{Proof of Proposition~\ref{prop:sdp13}}
+
+  We start by proving part~(b). Part~(a) then follows by simple modifications to the argument. Throughout, we mainly have the case $m = \min_k n_k$ in mind, which adds to the complexity in the construction of the primal-dual witness. When $m < \min_k n_k$, the set $I^c$ that appears below will be empty and the argument simplifies.
+
+  Let $\Lc_2(X) = X \onev_n$ and $b_2 = m\onev_n$. The dual to problem~\eqref{eq:sdp:13} is
+  \begin{align*}
+    \renewcommand{\arraystretch}{1.3}
+    \begin{array}{ll}
+      \max\limits_{\Gamma,\,\rho,\,\nu,\,\mu} & - \ip{\rho,b_2} + \ip{\nu,\onev_n} \\
+      \text{s.t.} & \Lambda :=  \diag^*(\nu) - \Lc_2^*(\rho) - (A-\mu \onem_n +\Gamma) \succeq 0 \\
+      & \Gamma \ge 0, \; \rho \ge 0
+    \end{array}
+  \end{align*}
+  Besides primal and dual feasibility we have the following complementary slackness conditions
+  \begin{align*}
+    \renewcommand{\arraystretch}{1.3}
+    \begin{array}{c|c|c}
+      \text{(CSa)} & \text{(CSb)} & \text{(CSc)}\\
+      \hline
+      \Gamma_{ij} X_{ij} = 0, \;\forall i,j & \; \Lambda X = 0 \; &\rho_i [\Lc_2(X) - b_2 ]_i = 0, \;\forall i
+    \end{array}
+  \end{align*}
+  Consider the potential primal solution given in~\eqref{eq:blk:diag:solution:2} and note that it always satisfies $X_{ii} = 1$, $X \succeq 0$ and $X \ge 0$. We can use (CSc) to make a reasonable choice of $\{\alpha_k\}$.
+  For $i \in S_k$, $[\Lc_2(X)]_i = (X \onev_n)_i =  \alpha_k \bs_k + (1-\alpha_k)$, hence $\rho_i [\Lc_2(X) - b_2 ]_i = 0$, together with the corresponding dual feasibility, translate to 
+  \begin{align}\label{SDP13:CS:phi:alpha}
+    \phi_k [ (\alpha_k \bs_k  + 1-\alpha_k) - m] = 0, \\
+      \alpha_k \bs_k  + 1-\alpha_k \ge m
+  \end{align}
+  Note that if $\bs_k > m$, then setting $\alpha_k = 1$ forces $\phi_k = 0$, hence we lose the flexibility associated with $\phi_k$. This suggests that we should avoid setting $\alpha_k = 1$, as much as possible, unless $\bs_k = m$. For simplicity, let $I_1 := I_1(k_0)$, and recall that $I := \{ k: \bs_k > m\}$ and $I_1 \subset I$. Let $I_2 := I \setminus I_1$ and note that $\alpha_k$ given in part~(b) of the proposition can be written as 
+  \begin{align*}
+    \alpha_k := 
+    \begin{cases}
+      \frac{m - 1}{\bs_k-1} < 1, & k \in I_2 \\
+      1, & k \in I^c \cup I_1
+    \end{cases}
+  \end{align*}
+where $I^c := [n] \setminus I = \{k: \bs_k = m\}$. Note that this choice frees $\phi_k, \forall k$ to be any nonnegative number, except for $k \in I_1$ where we need $\phi_k = 0$.
+
+\medskip
+We now turn to the dual variables. Let us take $\Lambda$ to be of the form
+\begin{align*}
+  \Lambda = \sum_{k=1}^K \lambda_k (-\onem_{S_k} + \bs_k I_{S_k}), \quad \lambda_k \ge 0.
+\end{align*}
+$\Lambda$ is block diagonal, and the $k$th block has eigenvalues $\lambda_k (0,\bs_k,\bs_k,\dots,\bs_k)$. We will choose $\rho_{S_k} = \frac12 \phi_k 1_{S_k}$. 
+%
+Note that $\Lc^*_2(\rho) = \rho \onev_n^T + \onev_n \rho^T$, hence $[\Lc^*_2(\rho)]_{S_k S_\ell} = \frac12 (\phi_k + \phi_\ell) \onem_{\bs_l,\bs_\ell}$ for all $k,\ell$. With $M:= \ex[A]$, the following has to hold
+\begin{align}
+  \mu \onem_{\bs_k,\bs_\ell} -  \frac12 (\phi_k + \phi_\ell) \onem_{\bs_k,\bs_\ell} - (M+\Gamma)_{S_k S_\ell} &
+    = 0, \quad k \neq \ell \notag \\
+  \mu \onem_{\bs_k} + \diag^*(\nu_{S_k}) - \phi_k \onem_{\bs_k} - M_{S_k} &= \lambda_k (-\onem_{\bs_k} + \bs_k I_{\bs_k}).
+  \label{eq:temp:156}
+\end{align}
+In deriving~\eqref{eq:temp:156}, we have used $\Gamma_{S_k} = 0, \, \forall k$ which follows from the particular choice of $X$ in~\eqref{eq:blk:diag:solution:2} and (CSa). 
+%
+Let $\psi_k := \mu - \phi_k$. Using $M_{S_k S_\ell} = q_{k\ell} \onem_{\bs_k \bs_\ell}, k \neq \ell$ and $M_{S_k} = p_k \onem_{\bs_k} $, we arrive at
+\begin{align*}
+  \Gamma_{S_k S_\ell} &= \Big[\frac12(\psi_k + \psi_\ell) - q_{k\ell} \Big] \onem_{\bs_k,\bs_\ell}, \\
+  \psi_k + \nu_i  - p_k &= (\bs_k - 1)\lambda_k, \quad i \in S_k \\
+  \psi_k - p_k &= - \lambda_k
+\end{align*}
+where the last two equalities are obtained by considering the diagonal and off-diagonal elements in~\eqref{eq:temp:156}. It follows that $\lambda_k = p_k - \psi_k$ and $\nu_i = \bs_k \lambda_k, \, i \in S_k$.
+
+Dual feasibility implies
+\begin{align}
+  \phi_k = \mu - \psi_k &\ge 0,\, \forall k \label{eq:temp:945}\\
+  \frac12(\psi_k + \psi_\ell) - q_{k\ell} &\ge 0, \quad \forall k \neq \ell \label{eq:temp:475}\\
+  \lambda_k = p_k - \psi_k &\ge 0,\quad  \forall k \label{eq:temp:348}
+\end{align}
+%
+(CSb), namely, $\Lambda X = 0$, translates to $\lambda_k (1-\alpha_k) = 0$, since $\onem_{S_k} (-\onem_{S_k} + m_k I_{S_k}) = 0$ implies
+$\Lambda X = \sum_k \lambda_k(1-\alpha_k) (-\onem_{S_k} + \bs_k I_{S_k})$.
+In particular, for $k \in I_2$, we have $\alpha_k < 1$, hence $\lambda_k = 0$; otherwise $\lambda_k$ is free to be any nonnegative number. To summarize, (CSb) and (CSc) impose the following restrictions on the dual variables
+\begin{align}
+  (\forall k \in I_1) \, \phi_k = 0, \;\; (\forall k \in I_2)\, \lambda_k = 0.
+  \label{eq:CS:summary}
+\end{align}
+%\medskip
+Recall the inequality $q_{k\ell} \le \frac{1}{2} (\qs_k+\qs_\ell), \; \forall k\neq \ell$. It follows that by choosing $\psi_k \ge \qs_k,\, \forall k$, we can satisfy~\eqref{eq:temp:475}. To satisfy~\eqref{eq:temp:945},~\eqref{eq:temp:348} and~\eqref{eq:CS:summary}, we need
+\begin{align}
+  (\forall k \in I_1) \,\psi_k = \mu \le p_k, \quad (\forall k \in I_2) \psi_k = p_k \le \mu, \quad (\forall k \in I^c) \,\psi_k \le \min\{p_k, \mu\} 
+\end{align}
+where we note that $I_1,I_2,I^c$ form a partition of $[K]$. Thus, it is enough to have
+\begin{align}\label{eq:temp:596}
+  (\forall k \in I_1) \mu \in [\qs_k,p_k], \quad (\forall k \in I_2) \mu \ge p_k, \quad (\forall k \in I^c) \,\qs_k \le \min\{p_k, \mu\} 
+\end{align}
+Since $\mu \in J_{k_0} \subset \bigcap_{k \in I_1(k_0)} [\qs_k,p_k]$, we have $\mu \in [\qs_k,p_k]$ for all $k \in I_1 = I_1(k_0)$. Since we have taken $\mu \ge p_{k_0+1}$, we have $\mu \ge p_k$ for all $k \ge k_0+1$ due to th assumed ordering of $\{p_k\}$. In particular, $\mu \ge p_k$ for all $k \in I_2$. For $k \in I^c$, either $ k \le k_0$, in which case $\mu \in [\qs_k,p_k]$, i.e. $\qs_k \le \mu = \min\{p_k,\mu\}$, or we have $k \ge k_0+1$ in which case $\mu \ge p_k$, hence $\qs_k \le p_k = \min\{\mu,p_k\}$. Thus, all the conditions in~\eqref{eq:temp:596} are met and the proof is complete.
+
+
+\bigskip
+\emph{Proof of part~(a).} The argument here is similar to that of part~(b). In addition to setting $\mu = 0$, the main difference is that (CSc) and dual feasibility condition $\rho_i \ge 0, \, \forall i$ is replaced by the single primal feasibility condition $\Lc_2(X) - b_2 = 0$. Note that there is no nonnegativity assumption on $\rho$ anymore. The argument goes true if we take $I_1 = \emptyset$ and $I_2 = I$, which ensures that $X \onev_n - m \onev_n = 0$. We now have $\psi_k = - \phi_k$ and the dual feasibility conditions reduce to~\eqref{eq:temp:475} and~\eqref{eq:temp:348}. Furthurmore,~\eqref{eq:CS:summary} is simplified to $(\forall k \in I) \lambda_k = 0$, since only (CSb) is present.  Thus, it is enough to have $\psi_k \ge \qs_k$ for all $k$ and 
+\begin{align}
+  (\forall k \in I)\, \psi_k = p_k, \quad (\forall k \in I^c) \psi_k \le p_k.
+\end{align}
+Since $\qs_k \le p_k, \forall k$, by assumption, it is clearly possible to choose $\psi_k$ to satisfy these conditions. 
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\Lct}{\widetilde{\Lc}}
+\newcommand{\bt}{\widetilde{b}}
+%\newcommand{\Af}{\mathfrak{A}}
+\newcommand{\mut}{\widetilde{\mu}}
+%\newcommand{\Cf}{\mathfrak{C}}
+\section{Implementation of SDP-1}\label{sec:implement}
+It is straightforward to adapt a first order method to solve the SDP-1
+problem~\eqref{eq:our:sdp}. %, so that it is reasonably scalable. 
+We briefly discuss the implementation of an ADMM solver~\cite{Boyd2010}. We start by rewriting the problem~as 
+\begin{align*}
+    \inf_X \big\{ -\ip{A,X} +\delta_{\{\Lct(X) \,= \,\bt\}}
+      + \delta_{\{Z \,\ge\, 0\}} 
+      + \delta_{\{Y \,\succeq\, 0\}} \big\} \; \quad \text{s.t.} \; X = Z, \;   X = Y,
+\end{align*}
+where $\delta_S$ is the indicator of set $S$ defined by $\delta_S(x) = 0$ if $x \in S$ and $= \infty$ otherwise, and $\Lct: \reals^{n \times n} \to \reals^{2 n}$ is a linear
+operator such that $\Lct(X) = \bt$ collects the affine constraints
+in~\eqref{eq:our:sdp}. More precisely, for $i=1,\dots,n$, we  take
+$[\Lct(X)]_i = \ip{X,H_i}$ and $[\Lct(X)]_{i+n} = \ip{X,F_i}$. Here,
+$H_i$ is a symmetric matrix with 1 in the off-diagonal elements of the
+$i$-th column and row, and 0 everywhere else.  $F_i$ is a matrix with
+element $(i,i)$ equal to 1 and 0 everywhere else.   Finally, $\bt_i = 2((n/K)-1)$ for $i=1,\dots,n$ and $b_i = 1$ otherwise. ($\Lct$ is a variation of $\Lc$ that appears in Section~\ref{sec:optim:cond}. It is chosen so that $H_i$ is orthogonal to $F_j$ for all $i,j$. However, $\{\Lct(X) =\bt\}$ and $\{\Lc(X) = b\}$ describe the same affine subspace.)
+
+The only real work in deriving ADMM updates is to find the projection operator $\proj_{\Ac}$ for $ \Ac := \{X: \Lct(X) = \bt\}$. For any $Y$, this projection is given~by 
+\begin{align}\label{eq:proj:L:Y}
+  \proj_{\Ac}(Y) := Y - \Lct^* (\Lct \Lct^*)^{-1}[ \Lct(Y) - \bt] .
+\end{align}
+Note that $\ip{H_i,F_j} = 0$ for all $i,j = 1, \dots, n$. Hence, $\Lct \Lct^*$ is block diagonal with two blocks $(\ip{H_i,H_j}) = 2[(n-2) I_n + \onev_n \onev_n^T]$ and 
+$(\ip{F_i,F_j}) = I_n$. It follows that
+\begin{align*}
+  (\Lct\Lct^*)^{-1} = \diag\Big(\frac{1}{2(n-2)} 
+    \big[ I_n - \frac{\onev_n \onev_n^T}{2n-2} \big],\; I_n \Big) \ . 
+\end{align*}
+We also have $\Lct^*(\mut,\nu) = \sum_i \mut_i E_i + \sum_i \nu_i F_i =
+(\mut_i + \mut_j)_{i \neq j} + \diag(\nu)$, which gives a complete
+recipe to compute $\proj_{\Ac}(Y)$. Note that due to the simplicity of
+$(\Lct \Lct^*)^{-1}$ and $\Lct^*$, implementing this projection has
+essentially the same computational cost as projecting onto an affine set with two constraints $\{X: \tr(X) = n,\; \ip{\onem_n,X} = n^2/K\}$, which is needed for implementing SDP-2. 
+
+
+The ADMM updates are easily derived to be
+\begin{align*}
+  X^{k+1} &= \proj_{\Ac}\big(\tfrac12
+  ( Z^k - \frac{1}{\rho}U^k + Y^k - \frac{1}{\rho} V^k +\tfrac1\rho A) \big) , \\
+  Z^{k+1}
+  &= %\proj_{\{X: X \ge 0\}} \big(X^{k+1} + U^k\big) = 
+  \max\{0,X^{k+1} + U^k\}, \quad 
+  Y^{k+1} = \proj_{\psd{n}} \big(X^{k+1} + V^k\big), \\
+  U^{k+1} &= U^{k} + \rho(X^{k+1}-Z^{k+1}), \quad 
+  V^{k+1} = V^{k} + \rho(X^{k+1}-Y^{k+1}).
+\end{align*}
+where $\rho$ is the step size parameter and $\proj_{\psd{n}}$ is the projection onto the PSD cone $\Sc_+^n$,
+which can be done by truncating to nonnegative eigenvalues. The ADMM
+updates for SDP-2 and SDP-3 can be derived similarly, as in~\cite{Cai2014}.
+
+% Let us also mention that one can derive ADMM updates for both SDP-2 and SDP-3 in a similar fashion. This has been done by \CaiLi\ i. 
+
+% Let us also mention that it is possible to put relaxations of \ChenXu\ and \CaiLi\, given~\eqref{eq:Chen:SDP} and~\eqref{eq:Cai:SDP}, in a more unified footing relative to SDP-1.
+%  This is done in Table~\ref{SDP-table}, by directly enforcing $\diag(X) = \onev_n$ (replacing $\tr(X) = n$ if necessary), and removing the unnecessary constraint $X \le 1$.  The resulting SDPs are called SDP-2 and SDP-3, respectively. These give slightly tighter relaxations in each case. It is noteworthy that the essential difference between the three SDPs are in their affine constraints. SDP-2 and SDP-3 can be implemented with minor variations on the above ADMM updates. For example, for SDP-2, we only need to modify the affine projection map $\proj_\Lc$. It is also interesting to note that the difference between SDP-2 and SDP-3 is the \emph{dualization} of the constraint $\ip{\onem_n,X} = n^2/K$.
+
+% From now on, we occasionally refer to~\eqref{eq:Chen:SDP} and~\eqref{eq:Cai:SDP} as SDP-2 and SDP-3, respectively. The context should make it clear which variation (with or without diagonal constraint) is intended in each case. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+
+
+
+
+
+
+\section{Details on Figure~\ref{fig:SDP13:and:everythin:else}:  comparing the theoretical predictions with empirical results}
+\label{sec:SDP13:fig:details}
+Figure~\ref{fig:SDP13:and:everythin:else} provides an illustration of the contents of Propositions~\ref{prop:failure:SDP-2} and~\ref{prop:sdp13}. The results are obtained by numerically solving the SDPs. Here, we explain how they match with our theoretical results. The leftmost panel corresponds to the mean matrix $M = \ex[A]$ of a weakly assortative block model, randomly picked among such models. The specific edge probability matrix is as follows: 
+\begin{align*}
+  \begin{array}{llllll}
+    0.670 &   0.072 &  0.020 &   0.023 &   0.186 &  0.187 \\
+    0.072 &   0.570 &  0.521 &   0.016 &   0.360 &  0.107 \\
+    0.020 &   0.521 &  0.555 &   0.048 &   0.311 &  0.188 \\
+    0.023 &   0.016 &  0.048 &   0.494 &   0.081 &  0.137 \\
+    0.186 &   0.360 &  0.311 &   0.081 &   0.475 &  0.031 \\
+    0.187 &   0.107 &  0.188 &   0.137 &   0.031 &  0.195
+  \end{array}.
+\end{align*}
+There are six blocks of sizes $\nb = (10,10,5,20,10,10)$. The parameters $p_k$ and $ \qs_k = \max_{\ell \neq k} q_{\ell:\, k \ell}$, for each of the $K=6$ blocks are as follows
+\begin{align}\label{eq:p:qs:table}
+  \begin{array}{lllllll}
+      \qs_k & 0.187 & 0.521 & 0.521 & 0.137 & 0.360 & 0.188  \\
+      p_k & 0.670 & 0.570 & 0.555 & 0.494 & 0.475 & 0.195
+  \end{array}.
+\end{align}
+where the overall maximum of the off-diagonal entries is $\max_k \qs_k = 0.521$. It is clear that the last three blocks violate strong associativity.
+
+ We can use part~(a) of Proposition~\ref{prop:failure:SDP-2} to predict the behavior of \SDPp{2}. Note that for this example, $(k_0,\ell_0) := \argmax_{k < \ell} q_{k \ell} = (2,3)$. We have $m = \min_k \bs_k = 5$, hence $(\xi_k)=(2,2,1,4,2,2)$ where $\xi_k = \bs_k /m$, $I = \{k: p_k \ge q_{k_0\ell_0} = 0.521\} = \{1,2,3\}$, $\xi_{k_0} = 2$ and $\xi_{\ell_0} = 1$. It then follows that
+\begin{align*}
+    \alpha^*_{k_0 \ell_0} = \frac{1}{2 (2 \cdot 1)} \Big[ \Big(1-\frac15\Big)(4+2+2) - (2\cdot1 + 2\cdot1 + 1\cdot 0)\Big] = 0.6.
+\end{align*}
+Since $\alpha^*_{k_0 \ell_0} \in [0,1]$, the conditions of part~(a) of Proposition~\ref{prop:failure:SDP-2} are met and the solution is of the form~\eqref{eq:alpha:k0:ell0} with $\alpha_1=\alpha_2=\alpha_3 = 1$, $\alpha_{23} = \alpha_{32} = 0.6$ and $\beta_k = 0$ for $ k=4,5,6$.
+
+Let us now apply Proposition~\ref{prop:sdp13} to predict the behavior of SDP-13. Recall that $J_k = \bigcap_{r=1}^k [\qs_r,p_r]$ which in this case gives 
+\begin{align*}
+  \begin{array}{c|cccccc}
+      k & 1 & 2 & 3 & 4 & 5 & 6 \\
+      \hline
+      \multirow{2}{*}{$J_k$} & 0.187 & 0.521 & 0.521 & 
+        \multirow{2}{*}{$\emptyset$} & \multirow{2}{*}{$\emptyset$} & \multirow{2}{*}{$\emptyset$} \\
+          & 0.670 & 0.570 & 0.555 & 
+  \end{array}.
+\end{align*}
+We have $k_0 = \max\{k: \; J_k \neq \emptyset\} = 3$ and we can apply SDP-13 with any $\mu \in J_3 \cap [p_4,1] = [0.521,0.555] \cap [0.494,1] = [0.521,0.555]$. The images in Figure~\ref{fig:SDP13:and:everythin:else} are generated with $\mu = 0.55$ and $m = \min_k \bs_k = 5$. We have $I = \{ k : n_k > m\} = \{k: \xi_k > 1\} = \{ 1,2,4,5,6\}$, hence $I_1(k_0) = I_1(3)=\{1,2\}$. Proposition~\ref{prop:sdp13}(b) now applies and we have a solution of the form~\eqref{eq:blk:diag:solution:2} with
+\begin{align*}
+  \begin{array}{c|cccccc}
+      k & 1 & 2 & 3 & 4 & 5 & 6 \\
+      \hline
+      \alpha_k & 1 & 1 & 1 & 0.211 & 0.444 & 0.444.
+  \end{array}
+\end{align*}
+Note that we have three perfectly recovered blocks in the sense discussed after Proposition~\ref{prop:sdp13}. 
+
+Finally, part~(a) of Proposition~\ref{prop:sdp13} predicts that SDP-1, applied with $m = 5$, has a solution of the form~\eqref{eq:blk:diag:solution:2} with
+\begin{align*}
+  \begin{array}{c|cccccc}
+      k & 1 & 2 & 3 & 4 & 5 & 6 \\
+      \hline
+      \alpha_k & 0.444 & 0.444 & 1 & 0.211 & 0.444 & 0.444.
+  \end{array}
+\end{align*}
+All the above predictions match what is empirically reported in Figure~\ref{fig:SDP13:and:everythin:else}. We also note that although the behavior of SDP-3 is not mentioned in Propositions~\ref{prop:failure:SDP-2} and~\ref{prop:sdp13}, that solution can also be predicted by careful examination of the proofs.
+
+\section{Details on Figure~\ref{fig:nmi}: the bias of normalized mutual information for large $K$}
+
+\renewcommand{\nmiscale}{.4}
+\begin{figure}[t]
+  \centering
+  \includegraphics[scale=\nmiscale]{figs/Kvar/{nmi_chance}.eps}
+  \includegraphics[scale=\nmiscale]{figs/Kvar/{nmi_n120_l7.0_Kvar_oir0.05_G1}.eps} \\
+  \includegraphics[scale=\nmiscale]{figs/Kvar/{nmi_n120_l5.0_Kvar_oir0.05_E1}.eps}
+  \includegraphics[scale=\nmiscale]{figs/Kvar/{nmi_n120_l3.0_Kvar_oir0.05_F1}.eps}
+ 
+   \caption{Top left: Average NMI of random guessing (or chance). The other three plots correspond to those of Figure~\ref{fig:nmi} but with raw NMI (no adjustment for chance).}
+
+   % : Adjusted NMI vs. $K$ in a balanced planted partition model, for various values of average degree $\avgd$. ($n=120$ and $\beta = 0.05$). }
+  \label{fig:nmi:adj}
+\end{figure}
+
+
+% Let us explain how as one increases $K$, the problem could be harder to a certain point and easier afterwards. This is especially the case when we approach the regime $n/K = O(1)$. For example, consider the setup of Figure~\ref{fig:nmi}.  With $n = 120$ and $K = 60$, one is fitting 60 two-node communities. If we randomly partition the 120 nodes into 2-node communities, at least half of each community is almost surely recovered. On the other hand, for $K = 10$, we have 12-node communities. If we randomly partition into such communities, to recover at least half of each community we need to have guessed, by chance, the labels of 6 nodes in each of the 10 communities correctly. This event has probability $\ll 1$. 
+
+Top left panel in Figure~\ref{fig:nmi:adj} shows the average (empirical) NMI of random guessing as a function of $K$.   Contrary to popular belief, the empirical NMI does not automatically adjust so that random guessing corresponds to zero NMI; unless $K$ is small.   It is designed to do so based on population quantities, but for the population quantities to be accurately approximated by empirical ones,  one needs concentration of the counts in the confusion matrix around their means, which does not happen unless $n/K$ is sufficiently large. Figure~\ref{fig:nmi:adj}  shows the plots of Figure~\ref{fig:nmi} after adjusting for random guessing by subtracting the corresponding average NMI. As one would expect, the dip in the curves goes away after the adjustment.
+
+
