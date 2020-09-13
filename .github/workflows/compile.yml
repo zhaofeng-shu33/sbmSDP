@@ -10,6 +10,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: install-dep
-      run: apt update && apt install --yes r-base-core r-cran-rcpp r-cran-rinside r-cran-rcpparmadillo
+      run: apt update && apt install --yes r-base-core r-cran-rcpp r-cran-rinside r-cran-rcpparmadillo python3-minimal python3-pip cython3 python3-networkx python3-numpy
     - name: Run a one-line script
       run: bash build.sh
