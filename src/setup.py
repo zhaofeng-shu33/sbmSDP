@@ -11,7 +11,12 @@ extensions = [
             '/usr/lib/R/site-library/RcppArmadillo/libs/',
             '/usr/lib/R/site-library/RInside/lib/'])]
 setup(
-    ext_modules=cythonize(extensions)
+    ext_modules=cythonize(extensions),
+    version = '0.1',
+    author = 'zhaofeng-shu33',
+    author_email = '616545598@qq.com',
+    license = 'Apache License Version 2.0',
+    description = 'SBM community detection with semi-definite programming'
 )
 
 
