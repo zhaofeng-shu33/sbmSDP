@@ -16,7 +16,7 @@ def sdp1_admm_py(pyMat, K):
     _m[0].set_size(n_rows, n_cols)
     for i in range(n_rows):
         for j in range(n_cols):
-            set_value(_m[0], i, j, pyMat[n_rows, n_cols])
+            set_value(_m[0], i, j, pyMat[i, j])
     result_list[0] = sdp1_admm(_m[0], K, empty_list[0])
     get_mat(_m_r[0], result_list[0])
     py_result_mat = np.zeros([n_rows, n_cols])

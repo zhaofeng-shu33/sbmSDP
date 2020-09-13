@@ -9,6 +9,6 @@ jobs:
     container: debian:buster
     steps:
     - name: install-dep
-      run: sudo apt update && sudo apt install r-base-core r-cran-rcpp r-cran-rinside r-cran-rcpparmadillo
+      run: apt update && apt install r-base-core r-cran-rcpp r-cran-rinside r-cran-rcpparmadillo
     - name: Run a one-line script
       run: bash build.sh
