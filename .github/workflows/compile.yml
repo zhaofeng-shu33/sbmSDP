@@ -8,7 +8,5 @@ jobs:
     runs-on: ubuntu-20.04
     container: debian:buster
     steps:
-    - name: install-dep
-      run: apt update && apt install --yes r-base-core r-cran-rcpp r-cran-rinside r-cran-rcpparmadillo
     - name: Run a one-line script
-      run: bash build.sh
+      run: ls
