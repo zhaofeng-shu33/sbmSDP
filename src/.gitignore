@@ -1,2 +1,4 @@
 sdp_admm_py.cpp
 *.o
+dist
+*.egg-info

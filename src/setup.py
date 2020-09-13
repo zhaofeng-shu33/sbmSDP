@@ -11,6 +11,7 @@ extensions = [
             '/usr/lib/R/site-library/RcppArmadillo/libs/',
             '/usr/lib/R/site-library/RInside/lib/'])]
 setup(
+    name='sdp_admm_py',
     ext_modules=cythonize(extensions),
     version = '0.1',
     author = 'zhaofeng-shu33',
