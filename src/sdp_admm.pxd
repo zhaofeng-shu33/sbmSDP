@@ -8,6 +8,9 @@ cdef extern from "Rcpp.h" namespace "Rcpp":
     cdef cppclass NumericMatrix:
         NumericMatrix()
         double operator()(int, int)
+cdef extern from "RInside.h":
+    cdef cppclass RInside:
+        RInside()
 cdef extern from "helper.h":
     cdef void set_value(mat, int, int, double)
     cdef List sdp1_admm(mat, int, List)

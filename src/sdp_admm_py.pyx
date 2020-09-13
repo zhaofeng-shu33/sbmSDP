@@ -1,8 +1,9 @@
 # distutils: language = c++
-from sdp_admm cimport List, mat, NumericMatrix
+from sdp_admm cimport List, mat, NumericMatrix, RInside
 from sdp_admm cimport set_value, sdp1_admm, get_mat
 import numpy as np
 def sdp1_admm_py(pyMat, K):
+    cdef RInside rinside # necessary to initialize global R object
     cdef List empty_list, result_list
     cdef mat _m
     cdef NumericMatrix _m_r
