@@ -1,0 +1,15 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-20.04
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: install-dep
+      run: sudo apt install r-base-core r-cran-rcpp r-cran-rcpparmadillo
+    - name: Run a one-line script
+      run: bash build.sh
