@@ -12,6 +12,12 @@ void get_mat(Rcpp::NumericMatrix& arr, Rcpp::List& fit_results) {
     Rcpp::NumericMatrix array_inner = fit_results["X"];
     arr = array_inner;
 }
+void set_list_value(Rcpp::List& list, double rho, int T, double tol, int report_interval) {
+    list["rho"] = rho;
+    list["T"] = T;
+    list["tol"] = tol;
+    list["report_interval"] = report_interval;
+}
 void initialize_r() {
     rinside = new RInside();
 }
