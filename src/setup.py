@@ -1,19 +1,26 @@
 from setuptools import setup, Extension
 from Cython.Build import cythonize
+import sys
+if sys.path[-1].find('conda') > 0:
+    root_dir = '/home/feng/.conda/envs/r_env/lib/R/library/'
+    r_dir = '/home/feng/.conda/envs/r_env/lib/R/include'
+else:
+    root_dir = '/usr/lib/R/site-library/'
+    r_dir = '/usr/share/R/include'
 extensions = [
     Extension("sdp_admm_py", ["sdp_admm_py.pyx", "sdp_admm.cpp"],
-        include_dirs=['/usr/lib/R/site-library/RcppArmadillo/include',
-                      '/usr/lib/R/site-library/Rcpp/include',
-                      '/usr/lib/R/site-library/RInside/include',
-                      '/usr/share/R/include'],
+        include_dirs=[root_dir + 'RcppArmadillo/include',
+                      root_dir + 'Rcpp/include',
+                      root_dir + 'RInside/include',
+                      r_dir],
         libraries = ['R', 'RInside', ':Rcpp.so', ':RcppArmadillo.so'],
-        library_dirs = ['/usr/lib/R/site-library/Rcpp/libs/',
-            '/usr/lib/R/site-library/RcppArmadillo/libs/',
-            '/usr/lib/R/site-library/RInside/lib/'])]
+        library_dirs = [root_dir + 'Rcpp/libs/',
+            root_dir + 'RcppArmadillo/libs/',
+            root_dir + 'RInside/lib/'])]
 setup(
     name='sdp_admm_py',
     ext_modules=cythonize(extensions),
-    version = '0.1',
+    version = '0.2',
     author = 'zhaofeng-shu33',
     author_email = '616545598@qq.com',
     license = 'Apache License Version 2.0',
