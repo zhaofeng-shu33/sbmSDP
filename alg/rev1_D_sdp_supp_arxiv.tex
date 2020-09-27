@@ -665,8 +665,8 @@ The ADMM updates are easily derived to be
   ( Z^k - \frac{1}{\rho}U^k + Y^k - \frac{1}{\rho} V^k +\tfrac1\rho A) \big) , \\
   Z^{k+1}
   &= %\proj_{\{X: X \ge 0\}} \big(X^{k+1} + U^k\big) = 
-  \max\{0,X^{k+1} + U^k\}, \quad 
-  Y^{k+1} = \proj_{\psd{n}} \big(X^{k+1} + V^k\big), \\
+	\max\{0,X^{k+1} + \frac{1}{\rho}U^k\}, \quad 
+	Y^{k+1} = \proj_{\psd{n}} \big(X^{k+1} + \frac{1}{\rho}V^k\big), \\
   U^{k+1} &= U^{k} + \rho(X^{k+1}-Z^{k+1}), \quad 
   V^{k+1} = V^{k} + \rho(X^{k+1}-Y^{k+1}).
 \end{align*}
