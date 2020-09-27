@@ -57,7 +57,7 @@ List sdp1_admm(arma::mat As, int K, List opts) {
     U = U+X-Z;
     V = V+X-Y;
    
-    delta(t) = norm(X-Xold,2);
+    delta(t) = norm(X-Xold, "F");
     CONVERGED = delta(t) < tol;
     
     if ((t+1) % report_interval == 0) {
