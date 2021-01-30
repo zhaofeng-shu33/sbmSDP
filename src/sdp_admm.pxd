@@ -11,6 +11,7 @@ cdef extern from "Rcpp.h" namespace "Rcpp":
 cdef extern from "helper.h":
     cdef void set_value(mat, int, int, double)
     cdef List sdp1_admm(mat, int, List)
+    cdef List sdp1_admm_si(mat, List)
     cdef void get_mat(NumericMatrix, List)
     cdef void initialize_r()
     cdef void deinitialize_r()
