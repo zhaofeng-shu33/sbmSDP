@@ -28,7 +28,7 @@ def sdp1_admm_py(pyMat, K, rho=0.1, T=10000, tol=1e-5, report_interval=100):
     del result_list
     del _m
     del _m_r
-    deinitialize_r()
+    # deinitialize_r()
     return py_result_mat
 
 def sdp1_admm_si_py(pyMat, rho=0.1, T=10000, tol=1e-5, report_interval=100):
