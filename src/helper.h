@@ -5,6 +5,8 @@
 RInside* rinside;
 
 Rcpp::List sdp1_admm(arma::mat As, int K, Rcpp::List opts);
+Rcpp::List sdp1_admm_si(arma::mat As, Rcpp::List opts);
+
 void set_value(arma::mat& arr, int x, int y, double value) {
     arr(x, y) = value;
 }
@@ -18,8 +20,12 @@ void set_list_value(Rcpp::List& list, double rho, int T, double tol, int report_
     list["tol"] = tol;
     list["report_interval"] = report_interval;
 }
+static bool has_been_initialized = false;
 void initialize_r() {
-    rinside = new RInside();
+    if (has_been_initialized == false) {
+        has_been_initialized = true;
+        rinside = new RInside();
+    }
 }
 
 void deinitialize_r() {

@@ -8,6 +8,7 @@ arma::mat Ac(arma::mat X, int n);
 arma::mat Acs(arma::vec z, int n);
 arma::vec Pinv(arma::vec z, int n);
 arma::mat projAXB(arma::mat X0, double alpha, int n);
+arma::mat projA(arma::mat X0, int n);
 arma::mat projToSDC(arma::mat M);
 
 
@@ -73,7 +74,49 @@ List sdp1_admm(arma::mat As, int K, List opts) {
       _["T_term"]=t
   );
 }
+List sdp1_admm_si(arma::mat As, List opts) {
+  
+  double rho = (opts.containsElementNamed("rho") ?  opts["rho"] : .1);
+  int    T   = (opts.containsElementNamed("T") ?  opts["T"] : 10000);
+  double tol = (opts.containsElementNamed("tol") ?  opts["tol"] : 1e-5);
+  int report_interval = (opts.containsElementNamed("report_interval") ?  opts["report_interval"] : 100);
+  
+  int    n = As.n_rows;
+  arma::vec delta = arma::zeros(T);
+  
+  arma::mat As_rescaled = (1./rho)*As, 
+            U = arma::zeros(n,n),
+            X = arma::zeros(n,n),
+            Xold = arma::zeros(n,n),
+            Z = arma::zeros(n,n);
+  
+  
+  
 
+  int t = 0;
+  bool CONVERGED = false;
+  while (!CONVERGED && t<T) {
+    Xold = X;
+    X = projA( 0.5*(Z-U+As_rescaled), n);
+    Z = projToSDC(X+U);
+    U = U+X-Z;
+   
+    delta(t) = norm(X-Xold, "F");
+    CONVERGED = delta(t) < tol;
+    
+    if ((t+1) % report_interval == 0) {
+      Rprintf("%4d | %15e\n", t+1, delta(t));  
+    }
+    
+    t++;
+  }
+  
+  return List::create(
+      _["X"]=X,
+      _["delta"]=delta,
+      _["T_term"]=t
+  );
+}
 
 arma::mat projToSDC(arma::mat M) {
   int n = M.n_rows;
@@ -106,6 +149,14 @@ arma::mat projAXB(arma::mat X0, double alpha, int n) {
   return X0 - Acs( Pinv( Ac(X0, n)-b,n ), n);
 }
 
+arma::mat projA(arma::mat X0, int n) {
+//   arma::vec b (2*n);
+//   b.ones();
+  arma::vec b = arma::ones(2*n);
+
+  b(arma::span(0,n-1)) = 0 * arma::ones(n);
+  return X0 - Acs( Pinv( Ac(X0, n)-b,n ), n);
+}
 
 arma::mat Acs(arma::vec z, int n) {
   arma::vec mu = z.head(n);
